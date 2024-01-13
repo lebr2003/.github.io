@@ -5,6 +5,16 @@
     <title>Medizinprodukte</title>
  <link rel="icon" href="https://www.malteser.at/wp-content/uploads/2017/07/author.png" type="image/x-icon">
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <script>
+        window.addEventListener('beforeunload', function (e) {
+            // Standardmeldung für die Warnung
+            var confirmationMessage = "Durch das Neuladen der Seite gehen alle Änderungen verloren!";
+
+            // (Optional) Ändere die Standardmeldung nach Bedarf
+            e.returnValue = confirmationMessage;
+            return confirmationMessage;
+        });
+    </script>
     <style>
 body {
     font-family: Calibri, sans-serif;
