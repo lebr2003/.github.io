@@ -64,18 +64,6 @@ body {
     }
        
 
-        .column-labelB {
-            position: absolute;
-            top: -25px;
-            font-weight: bold; /* Überschriften fettgedruckt */
-        }
-
-        .column-labelD {
-            position: absolute;
-            top: -25px;
-            font-weight: bold; /* Überschriften fettgedruckt */
-        }
-
     #dataTable {
         width: 600px; /* Breite der gesamten Tabelle */
     }
@@ -87,7 +75,6 @@ body {
         
 
         #tableB {
-            margin-top: 45px;
             width: 600px; /* Breite der gesamten Tabelle */
         }
 
@@ -97,7 +84,6 @@ body {
 
 
         #tableD {
-            margin-top: 45px;
             width: 600px; /* Breite der gesamten Tabelle */
         }
 
@@ -363,12 +349,15 @@ button.disabled-button {
 <input type="file" id="excelFileInput" accept=".xlsx">
 <button type="button" onclick="importExcelFile()">Vergleichen</button>
 
-     <div class="table-container">
-        <div class="column-labelB" style="left: 46px;">Barcode</div>
-        <div class="column-labelB" style="left: 200px;">Menge</div>
-        <div class="column-labelB" style="left: 338px;">Min. Menge</div>
-        <div class="column-labelB" style="left: 481px;">Bezeichnung</div>
+    <div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing-Menge">Menge</span>
+    <span class="word-spacing-Ablaufdatum">Min. Menge</span>
+    <span class="word-spacing-Bezeichnung">Bezeichnung</span>
+    </div>
 
+ <div class="table-container">
+       
         <table id="tableB" style="width: 600px;" border="1">
             <!-- Hier fügen Sie Ihre Tabelle für Formular 2 ein -->
         </table>
@@ -377,12 +366,15 @@ button.disabled-button {
 
  <p class="großer-abstand">Produkte, die nicht im Inventar enthalten sind:</p>
 
-    <div class="table-container">
-        <div class="column-labelD" style="left: 35px;">Barcode</div>
-        <div class="column-labelD" style="left: 172px;">Bezeichnung</div>
-        <div class="column-labelD" style="left: 330px;">Min. Menge</div>
-        <div class="column-labelD" style="left: 465px;">Lagerort</div>
+    <div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing-Menge">Bezeichnung</span>
+    <span class="word-spacing-Ablaufdatum">Min. Menge</span>
+    <span class="word-spacing-Bezeichnung">Lagerort</span>
+    </div>
 
+ <div class="table-container">
+        
         <table id="tableD" style="width: 600px;" border="1">
             <!-- Hier fügen Sie Ihre Tabelle für Formular 2 ein -->
         </table>
