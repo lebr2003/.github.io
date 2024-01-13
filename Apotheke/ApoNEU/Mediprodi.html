@@ -394,32 +394,26 @@ button.disabled-button {
 
     <script>
 
-              
-             // Funktion zum Laden der Daten von GitHub und Aktualisieren der Tabelle
+       // Funktion zum Laden der Daten von GitHub und Aktualisieren der Tabelle
 function loadButton() {
     // GitHub API URL für die Daten
     const githubApiUrl = 'https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNEU/Medizinprodukte/daten.json';
 
-    // Authentifizierungsinformationen
-    const authToken = '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';
-
     // GitHub API-Anfrage zum Laden der Daten (ohne Token)
-fetch('https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNEU/Medizinprodukte/daten.json', {
-    method: 'GET',
-    // Kein Authorization-Header erforderlich
-})
-.then(response => {
-    if (!response.ok) {
-        throw new Error(`HTTP-Fehler! Status: ${response.status}`);
-    }
-    return response.json();
-})
-.then(data => {
-    // Verarbeite die erhaltenen Daten hier
-})
-.catch(error => console.error('Fehler beim Laden der Daten von GitHub:', error));
+    fetch(githubApiUrl, {
+        method: 'GET',
+        // Kein Authorization-Header erforderlich
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Verarbeite die erhaltenen Daten hier
+        const decodedContent = JSON.parse(atob(data.content));
 
-        
         // Tabelle leeren
         clearTable();
 
@@ -434,10 +428,17 @@ fetch('https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNEU/Med
         });
     })
     .catch(error => console.error('Fehler beim Laden der Daten von GitHub:', error));
-    
-    event.preventDefault();
+
+     event.preventDefault();
 }
 
+
+
+
+
+
+
+        
 
 // Funktion zum Leeren der Tabelle
 function clearTable() {
