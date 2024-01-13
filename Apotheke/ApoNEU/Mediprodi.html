@@ -866,7 +866,7 @@ function saveDataToGitHub() {
         body: JSON.stringify({
             message: 'Daten aktualisieren',
             content: btoa(unescape(encodeURIComponent(jsonData))),
-            sha: 'SHA-WERT_DER_DATEI', // SHA-Wert der vorhandenen Datei, wenn vorhanden
+            sha: '640b3962382d460aaf54f9e031020a39a6703093', // SHA-Wert der vorhandenen Datei, wenn vorhanden
         }),
     })
     .then(response => response.json())
