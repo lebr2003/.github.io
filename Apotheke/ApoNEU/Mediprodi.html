@@ -403,22 +403,22 @@ function loadButton() {
     // Authentifizierungsinformationen
     const authToken = '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';
 
-    // AJAX-Anfrage an die GitHub API zum Laden der Daten
-    fetch(githubApiUrl, {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${authToken}`,
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Daten von GitHub erhalten
-        const decodedContent = JSON.parse(atob(data.content));
+    // GitHub API-Anfrage zum Laden der Daten (ohne Token)
+fetch('https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNEU/Medizinprodukte/daten.json', {
+    method: 'GET',
+    // Kein Authorization-Header erforderlich
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+    }
+    return response.json();
+})
+.then(data => {
+    // Verarbeite die erhaltenen Daten hier
+})
+.catch(error => console.error('Fehler beim Laden der Daten von GitHub:', error));
+
         
         // Tabelle leeren
         clearTable();
