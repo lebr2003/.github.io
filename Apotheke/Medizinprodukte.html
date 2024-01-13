@@ -36,19 +36,28 @@ body {
 
         .header-words {
         display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
+        margin-top: 10px;
+        margin-left: 40px;
+        margin-bottom: 10px;
+        font-weight: bold;
     }
 
-    .word-spacing {
-        margin-left: 10px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    .word-spacing-Menge {
+        margin-left: 75px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+    .word-spacing-Ablaufdatum {
+        margin-left: 55px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+    .word-spacing-Bezeichnung {
+        margin-left: 85px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
     }
 
 
         
        .table-container {
         position: relative;
-        margin-bottom: 20px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
         height: 700px; /* Höhe der Tabelle */
         overflow: auto; /* Fügt den Scrollbalken hinzu, wenn der Inhalt die Höhe überschreitet */
     }
@@ -67,7 +76,6 @@ body {
         }
 
     #dataTable {
-        margin-top: 25px; /* Reduziere den oberen Rand, um Platz für die Überschriften zu schaffen */
         width: 600px; /* Breite der gesamten Tabelle */
     }
 
@@ -318,12 +326,6 @@ button.disabled-button {
     </div>
 </div>
 
-<div class="header-words">
-    <span>Barcode</span>
-    <span class="word-spacing">Menge</span>
-    <span class="word-spacing">Ablaufdatum</span>
-    <span class="word-spacing">Bezeichnung</span>
-</div>
 
 
 
@@ -335,6 +337,14 @@ button.disabled-button {
         <input type="text" placeholder="Bezeichnung">
 <button type="button" onclick="search()">Suchen</button>
 <button type="button" class="red-button" onclick="addNewEntry()">Neuer Eintrag</button>
+</div>
+
+
+<div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing-Menge">Menge</span>
+    <span class="word-spacing-Ablaufdatum">Ablaufdatum</span>
+    <span class="word-spacing-Bezeichnung">Bezeichnung</span>
 </div>
 
 
