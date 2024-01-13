@@ -41,10 +41,11 @@ body {
     overflow: auto; /* Fügt den Scrollbalken hinzu, wenn der Inhalt die Höhe überschreitet */
 }
 
-        .column-label {
-    position: absolute;
-    top: -25px;
+.column-label {
+    position: sticky;
+    top: 0;
     font-weight: bold; /* Überschriften fettgedruckt */
+    background-color: #f0f0f0; /* Hintergrundfarbe für bessere Sichtbarkeit */
 }
        
 
@@ -61,7 +62,7 @@ body {
         }
 
 #dataTable {
-    margin-top: 45px;
+    margin-top: 25px; /* Reduziere den oberen Rand, um Platz für die Überschriften zu schaffen */
     width: 600px; /* Breite der gesamten Tabelle */
 }
 
