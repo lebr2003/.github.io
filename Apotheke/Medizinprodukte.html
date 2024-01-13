@@ -310,7 +310,7 @@ button.disabled-button {
 
 
 
-    <div class="text-input-container">
+   <div class="text-input-container">
         <!-- Texteingabefelder -->
         <input type="text" placeholder="Barcode">
         <input type="text" placeholder="Menge">
@@ -323,15 +323,10 @@ button.disabled-button {
 
 
     <div class="table-container">
-        <div class="column-label" style="left: 50px;">Barcode</div>
-        <div class="column-label" style="left: 210px;">Menge</div>
-        <div class="column-label" style="left: 334px;">Ablaufdatum</div>
-        <div class="column-label" style="left: 480px;">Bezeichnung</div>
-
-        <table id="dataTable" border="1">
-            <!-- Weitere Tabellenzeilen hier einfügen -->
-        </table>
-    </div>
+    <table id="dataTable" border="1">
+        <!-- Weitere Tabellenzeilen hier einfügen -->
+    </table>
+</div>
 
 </form>
 
@@ -341,10 +336,15 @@ button.disabled-button {
 <button type="button" onclick="importExcelFile()">Vergleichen</button>
 
      <div class="table-container">
-    <table id="dataTable" border="1">
-        <!-- Weitere Tabellenzeilen hier einfügen -->
-    </table>
-</div>
+        <div class="column-labelB" style="left: 46px;">Barcode</div>
+        <div class="column-labelB" style="left: 200px;">Menge</div>
+        <div class="column-labelB" style="left: 338px;">Min. Menge</div>
+        <div class="column-labelB" style="left: 481px;">Bezeichnung</div>
+
+        <table id="tableB" style="width: 600px;" border="1">
+            <!-- Hier fügen Sie Ihre Tabelle für Formular 2 ein -->
+        </table>
+    </div>
 
 
  <p class="großer-abstand">Produkte, die nicht im Inventar enthalten sind:</p>
