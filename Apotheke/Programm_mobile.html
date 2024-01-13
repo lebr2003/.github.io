@@ -20,11 +20,13 @@
             position: relative;
         }
         header img {
-            position: absolute;
-            top: 139%;
-            right: 20px;
-            transform: translateY(-50%);
-        }
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        width: 80px; /* Hier die Breite des Logos anpassen */
+        height: auto; /* Das Verhältnis beibehalten */
+    }
         .container {
             max-width: 960px;
             margin: 0 auto;
@@ -75,10 +77,10 @@
     </div>
 
      <script>
-        // Überprüfen, ob die Seite auf einem mobilen Gerät geöffnet wird
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            // Umleitung auf separate Seite für mobile Geräte
-            window.location.href = 'Programm_mobile.html';
+        // Überprüfen, ob die Desktop-Version angefordert wird
+        if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // Umleitung zur Hauptseite
+            window.location.href = 'Programm.html';
         }
     </script>
 </body>
