@@ -249,6 +249,9 @@ button.disabled-button {
 
     <input type="file" id="fileInput" accept=".txt">
     <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
+   
+    <button id="loadButton">GitHub laden</button>
+    
 <button type="button" onclick="refreshTable()">Refresh</button>
 <button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
 <button type="button" onclick="openReadmePopup()">README</button> 
@@ -390,6 +393,54 @@ button.disabled-button {
 </form>
 
     <script>
+
+        const loadButton = document.getElementById('loadButton');
+loadButton.addEventListener('click', loadDataFromGitHub);
+
+        
+        // Funktion zum Laden der Daten von GitHub und Aktualisieren der Tabelle
+function loadDataFromGitHub() {
+    // GitHub API URL für die Daten
+    const githubApiUrl = 'https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNeu/Medizinprodukte/daten.json';
+
+    // Authentifizierungsinformationen
+    const authToken = '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';
+
+    // AJAX-Anfrage an die GitHub API zum Laden der Daten
+    fetch(githubApiUrl, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${authToken}`,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Daten von GitHub erhalten
+        const decodedContent = JSON.parse(atob(data.content));
+        
+        // Tabelle leeren
+        clearTable();
+
+        // Durchlaufe die erhaltenen Daten und füge sie der Tabelle hinzu
+        const table = document.getElementById('dataTable');
+        decodedContent.forEach(rowData => {
+            const newRow = table.insertRow(-1);
+            for (const key in rowData) {
+                const cell = newRow.insertCell();
+                cell.innerHTML = rowData[key];
+            }
+        });
+    })
+    .catch(error => console.error('Fehler beim Laden der Daten von GitHub:', error));
+}
+
+// Funktion zum Leeren der Tabelle
+function clearTable() {
+    const table = document.getElementById('dataTable');
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+}
 
 function importTextFile() {
     const fileInput = document.getElementById('fileInput');
@@ -800,7 +851,7 @@ function saveDataToGitHub() {
     const githubApiUrl = 'https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNeu/Medizinprodukte/daten.json';
 
     // Authentifizierungsinformationen
-    const authToken = 'DEIN_GITHUB_TOKEN';
+    const authToken = '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';
 
     // AJAX-Anfrage an die GitHub API zum Speichern der Daten
     fetch(githubApiUrl, {
@@ -819,27 +870,6 @@ function saveDataToGitHub() {
     .then(data => console.log('Daten erfolgreich gespeichert:', data))
     .catch(error => console.error('Fehler beim Speichern der Daten:', error));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         
 
