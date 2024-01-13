@@ -5,6 +5,7 @@
     <title>Medizinprodukte</title>
  <link rel="icon" href="https://www.malteser.at/wp-content/uploads/2017/07/author.png" type="image/x-icon">
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="https://cdn.skypack.dev/@octokit/core"></script>
 
     <script>
         var isPageVisible = true;
@@ -249,9 +250,10 @@ button.disabled-button {
 
     <input type="file" id="fileInput" accept=".txt">
     <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
-    <button type="button" onclick="loadDataFromGitHub()" style="margin-right: 25px;">GitHub laden</button>
-<button type="button" onclick="refreshTable()">Refresh</button>
+    <button type="button" onclick="loadDataFromGitHub()">GitHub laden</button>
+    <button type="button" onclick="refreshTable()">Refresh</button>
 <button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
+    <button type="button" onclick="uploadTableToGitHub()">GitHub hochladen</button>
 <button type="button" onclick="openReadmePopup()">README</button> 
 <button type="button" type="button" class="blue-button" onclick="openComparisonTable()">Menge</button>
 <button class="green-button" onclick="exportTextFile()">Exportieren</button>
@@ -392,16 +394,22 @@ button.disabled-button {
 
     <script>
 
-const octokit = new Octokit({
-  auth: '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'
-});
+const { Octokit } = require('@octokit/core');
 
+// Authentifizierungsinformationen
+const authToken = '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';
+
+// GitHub Repository Informationen
+const owner = 'lebr2003';
+const repo = 'Block9';
+const path = 'Apotheke/ApoNEU/Medizinprodukte/daten.json';
+const branch = 'main'; // Der Branch, auf dem du arbeiten möchtest
+
+// Erstelle eine Instanz von Octokit
+const octokit = new Octokit({ auth: authToken });
+
+// Funktion zum Laden der Daten von GitHub
 async function loadDataFromGitHub() {
-  // GitHub Repository Informationen
-  const owner = 'lebr2003';
-  const repo = 'Block9';
-  const path = 'Apotheke/ApoNEU/Medizinprodukte/daten.json'; // Passe den Pfad entsprechend an
-
   try {
     // API-Anfrage zum Laden der Datei
     const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
@@ -435,15 +443,56 @@ async function loadDataFromGitHub() {
   } catch (error) {
     console.error('Fehler beim Laden der Daten von GitHub:', error);
   }
-    event.preventDefault();
+  event.preventDefault();
 }
 
-        function clearTable() {
+// Funktion zum Hochladen der gesamten Tabelle auf GitHub
+async function uploadTableToGitHub() {
+  // Beispiel-Daten
+  const tableData = [];
+
+  // Durchlaufe die Tabelle und füge Daten dem Array hinzu
   const table = document.getElementById('dataTable');
-  while (table.rows.length > 1) {
-    table.deleteRow(1);
+  for (let i = 1; i < table.rows.length; i++) {
+    const rowData = {
+      Barcode: table.rows[i].cells[0].innerHTML,
+      Menge: table.rows[i].cells[1].innerHTML,
+      Ablaufdatum: table.rows[i].cells[2].innerHTML,
+      Bezeichnung: table.rows[i].cells[3].innerHTML,
+    };
+    tableData.push(rowData);
   }
+
+  // Konvertiere Daten in JSON
+  const jsonData = JSON.stringify(tableData, null, 2);
+
+  try {
+    // Lade die aktuelle SHA der Datei von GitHub herunter
+    const currentFile = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner,
+      repo,
+      path,
+      ref: branch,
+    });
+
+    // Aktualisiere die Datei auf GitHub
+    const response = await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+      owner,
+      repo,
+      path,
+      message: 'Aktualisiere Daten',
+      content: Buffer.from(jsonData).toString('base64'),
+      sha: currentFile.data.sha,
+      branch,
+    });
+
+    console.log('Daten erfolgreich auf GitHub aktualisiert:', response.data);
+  } catch (error) {
+    console.error('Fehler beim Hochladen der Daten auf GitHub:', error);
+  }
+  event.preventDefault();
 }
+
 
         
 
