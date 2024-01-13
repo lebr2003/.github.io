@@ -249,6 +249,7 @@ button.disabled-button {
 
     <input type="file" id="fileInput" accept=".txt">
     <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
+    <button type="button" onclick="loadDataFromGitHub()" style="margin-right: 25px;">GitHub laden</button>
 <button type="button" onclick="refreshTable()">Refresh</button>
 <button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
 <button type="button" onclick="openReadmePopup()">README</button> 
@@ -390,6 +391,61 @@ button.disabled-button {
 </form>
 
     <script>
+
+const octokit = new Octokit({
+  auth: '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'
+});
+
+async function loadDataFromGitHub() {
+  // GitHub Repository Informationen
+  const owner = 'lebr2003';
+  const repo = 'Block9';
+  const path = 'Apotheke/ApoNEU/Medizinprodukte/daten.json'; // Passe den Pfad entsprechend an
+
+  try {
+    // API-Anfrage zum Laden der Datei
+    const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: owner,
+      repo: repo,
+      path: path,
+      headers: {
+        'Accept': 'application/vnd.github.v3.raw', // Content-Type auf Raw setzen
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+
+    // Verarbeite die erhaltenen Daten hier
+    const jsonData = response.data;
+    const decodedContent = JSON.parse(jsonData);
+
+    // Tabelle leeren
+    clearTable();
+
+    // Durchlaufe die erhaltenen Daten und füge sie der Tabelle hinzu
+    const table = document.getElementById('dataTable');
+    decodedContent.forEach(rowData => {
+      const newRow = table.insertRow(-1);
+      for (const key in rowData) {
+        const cell = newRow.insertCell();
+        cell.innerHTML = rowData[key];
+      }
+    });
+
+    console.log('Daten erfolgreich geladen:', decodedContent);
+  } catch (error) {
+    console.error('Fehler beim Laden der Daten von GitHub:', error);
+  }
+    event.preventDefault();
+}
+
+        function clearTable() {
+  const table = document.getElementById('dataTable');
+  while (table.rows.length > 1) {
+    table.deleteRow(1);
+  }
+}
+
+        
 
 function importTextFile() {
     const fileInput = document.getElementById('fileInput');
