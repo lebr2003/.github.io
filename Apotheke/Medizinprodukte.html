@@ -35,18 +35,11 @@ body {
 }
 
        .table-container {
-    position: relative;
-    margin-bottom: 20px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
-    height: 700px; /* Höhe der Tabelle */
-    overflow: auto; /* Fügt den Scrollbalken hinzu, wenn der Inhalt die Höhe überschreitet */
-}
-
-.column-label {
-    position: sticky;
-    top: 0;
-    font-weight: bold; /* Überschriften fettgedruckt */
-    background-color: #f0f0f0; /* Hintergrundfarbe für bessere Sichtbarkeit */
-}
+        position: relative;
+        margin-bottom: 20px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
+        height: 700px; /* Höhe der Tabelle */
+        overflow: auto; /* Fügt den Scrollbalken hinzu, wenn der Inhalt die Höhe überschreitet */
+    }
        
 
         .column-labelB {
@@ -61,14 +54,14 @@ body {
             font-weight: bold; /* Überschriften fettgedruckt */
         }
 
-#dataTable {
-    margin-top: 25px; /* Reduziere den oberen Rand, um Platz für die Überschriften zu schaffen */
-    width: 600px; /* Breite der gesamten Tabelle */
-}
+    #dataTable {
+        margin-top: 25px; /* Reduziere den oberen Rand, um Platz für die Überschriften zu schaffen */
+        width: 600px; /* Breite der gesamten Tabelle */
+    }
 
-#dataTable th, #dataTable td {
-    width: 120px; /* Breite der einzelnen Felder/Spalten */
-}
+    #dataTable th, #dataTable td {
+        width: 120px; /* Breite der einzelnen Felder/Spalten */
+    }
 
         
 
@@ -348,15 +341,10 @@ button.disabled-button {
 <button type="button" onclick="importExcelFile()">Vergleichen</button>
 
      <div class="table-container">
-        <div class="column-labelB" style="left: 46px;">Barcode</div>
-        <div class="column-labelB" style="left: 200px;">Menge</div>
-        <div class="column-labelB" style="left: 338px;">Min. Menge</div>
-        <div class="column-labelB" style="left: 481px;">Bezeichnung</div>
-
-        <table id="tableB" style="width: 600px;" border="1">
-            <!-- Hier fügen Sie Ihre Tabelle für Formular 2 ein -->
-        </table>
-    </div>
+    <table id="dataTable" border="1">
+        <!-- Weitere Tabellenzeilen hier einfügen -->
+    </table>
+</div>
 
 
  <p class="großer-abstand">Produkte, die nicht im Inventar enthalten sind:</p>
