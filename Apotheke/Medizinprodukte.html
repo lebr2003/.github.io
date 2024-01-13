@@ -34,16 +34,19 @@ body {
     font-family: Calibri, sans-serif;
 }
 
-        .table-container {
-            position: relative;
-            margin-bottom: 20px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
-        }
+       .table-container {
+    position: relative;
+    margin-bottom: 20px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
+    height: 300px; /* Höhe der Tabelle */
+    overflow: auto; /* Fügt den Scrollbalken hinzu, wenn der Inhalt die Höhe überschreitet */
+}
 
         .column-label {
-            position: absolute;
-            top: -25px;
-            font-weight: bold; /* Überschriften fettgedruckt */
-        }
+    position: absolute;
+    top: -25px;
+    font-weight: bold; /* Überschriften fettgedruckt */
+}
+       
 
         .column-labelB {
             position: absolute;
@@ -57,15 +60,19 @@ body {
             font-weight: bold; /* Überschriften fettgedruckt */
         }
 
+#dataTable {
+    margin-top: 45px;
+    width: 600px; /* Breite der gesamten Tabelle */
+}
 
-        #dataTable {
-            margin-top: 45px;
-            width: 600px; /* Breite der gesamten Tabelle */
-        }
+#dataTable th, #dataTable td {
+    width: 120px; /* Breite der einzelnen Felder/Spalten */
+    border: 1px solid #ddd; /* Rahmen für die Zellen hinzufügen */
+    padding: 8px; /* Abstand innerhalb der Zellen */
+    text-align: left; /* Text links ausrichten */
+}
 
-        #dataTable th, #dataTable td {
-            width: 120px; /* Breite der einzelnen Felder/Spalten */
-        }
+        
 
         #tableB {
             margin-top: 45px;
