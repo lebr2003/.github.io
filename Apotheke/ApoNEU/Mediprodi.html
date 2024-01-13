@@ -249,9 +249,6 @@ button.disabled-button {
 
     <input type="file" id="fileInput" accept=".txt">
     <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
-   
-     <button type="button" onclick="loadButton()">GitHub laden</button>
-    
 <button type="button" onclick="refreshTable()">Refresh</button>
 <button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
 <button type="button" onclick="openReadmePopup()">README</button> 
@@ -394,61 +391,6 @@ button.disabled-button {
 
     <script>
 
-       // Funktion zum Laden der Daten von GitHub und Aktualisieren der Tabelle
-function loadButton() {
-    // GitHub API URL für die Daten
-    const githubApiUrl = 'https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNEU/Medizinprodukte/daten.json';
-
-    // GitHub API-Anfrage zum Laden der Daten (ohne Token)
-    fetch(githubApiUrl, {
-        method: 'GET',
-        // Kein Authorization-Header erforderlich
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP-Fehler! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Verarbeite die erhaltenen Daten hier
-        const decodedContent = JSON.parse(atob(data.content));
-
-        // Tabelle leeren
-        clearTable();
-
-        // Durchlaufe die erhaltenen Daten und füge sie der Tabelle hinzu
-        const table = document.getElementById('dataTable');
-        decodedContent.forEach(rowData => {
-            const newRow = table.insertRow(-1);
-            for (const key in rowData) {
-                const cell = newRow.insertCell();
-                cell.innerHTML = rowData[key];
-            }
-        });
-    })
-    .catch(error => console.error('Fehler beim Laden der Daten von GitHub:', error));
-
-     event.preventDefault();
-}
-
-
-
-
-
-
-
-        
-
-// Funktion zum Leeren der Tabelle
-function clearTable() {
-    const table = document.getElementById('dataTable');
-    while (table.rows.length > 1) {
-        table.deleteRow(1);
-    }
-}
-
-     
 function importTextFile() {
     const fileInput = document.getElementById('fileInput');
     const dataTable = document.getElementById('dataTable');
@@ -777,8 +719,6 @@ if (cellValue === BezeichnungInputNormalized) {
 }
 
 
-
-
 function addNewEntry() {
     // Zugriff auf die Textfelder
     const barcodeInput = document.querySelector('input[placeholder="Barcode"]');
@@ -824,58 +764,9 @@ function addNewEntry() {
 
     // Fokus auf das Barcode-Textfeld legen
     barcodeInput.focus();
-
-    // Daten in GitHub speichern
-    saveDataToGitHub();
-
-    // Warnung für nicht gespeicherte Änderungen anzeigen
-    showUnsavedWarning();
-
-    event.preventDefault();
+showUnsavedWarning();
+event.preventDefault();
 }
-
-// Funktion zum Speichern der Daten in GitHub
-function saveDataToGitHub() {
-    // Beispiel-Daten
-    const tableData = [];
-
-    // Durchlaufe die Tabelle und füge Daten dem Array hinzu
-    const table = document.getElementById('dataTable');
-    for (let i = 1; i < table.rows.length; i++) {
-        const rowData = {
-            Barcode: table.rows[i].cells[0].innerHTML,
-            Menge: table.rows[i].cells[1].innerHTML,
-            Ablaufdatum: table.rows[i].cells[2].innerHTML,
-            Bezeichnung: table.rows[i].cells[3].innerHTML,
-        };
-        tableData.push(rowData);
-    }
-
-    // Konvertiere Daten in JSON
-    const jsonData = JSON.stringify(tableData, null, 2);
-
-    // GitHub API URL
-    const githubApiUrl = 'https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNEU/Medizinprodukte/daten.json';
-
-    // AJAX-Anfrage an die GitHub API zum Speichern der Daten
-    fetch(githubApiUrl, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            message: 'Daten aktualisieren',
-            content: btoa(unescape(encodeURIComponent(jsonData))),
-            sha: '640b3962382d460aaf54f9e031020a39a6703093', // SHA-Wert der vorhandenen Datei, wenn vorhanden
-        }),
-    })
-    .then(response => response.json())
-    .then(data => console.log('Daten erfolgreich gespeichert:', data))
-    .catch(error => console.error('Fehler beim Speichern der Daten:', error));
-}
-
-
-        
 
 // Diese Funktion überprüft, ob Daten in der Tabelle vorhanden sind.
 function isTableNotEmpty() {
