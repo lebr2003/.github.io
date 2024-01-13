@@ -34,6 +34,18 @@ body {
     font-family: Calibri, sans-serif;
 }
 
+        .header-words {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
+    }
+
+    .word-spacing {
+        margin-left: 10px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+
+        
        .table-container {
         position: relative;
         margin-bottom: 20px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zu setzen */
@@ -306,7 +318,12 @@ button.disabled-button {
     </div>
 </div>
 
-
+<div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing">Menge</span>
+    <span class="word-spacing">Ablaufdatum</span>
+    <span class="word-spacing">Bezeichnung</span>
+</div>
 
 
 
