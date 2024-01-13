@@ -250,7 +250,7 @@ button.disabled-button {
     <input type="file" id="fileInput" accept=".txt">
     <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
    
-    <button id="loadButton">GitHub laden</button>
+     <button type="button" onclick="loadButton()">GitHub laden</button>
     
 <button type="button" onclick="refreshTable()">Refresh</button>
 <button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
@@ -394,12 +394,9 @@ button.disabled-button {
 
     <script>
 
-        const loadButton = document.getElementById('loadButton');
-loadButton.addEventListener('click', loadDataFromGitHub);
-
-        
+              
         // Funktion zum Laden der Daten von GitHub und Aktualisieren der Tabelle
-function loadDataFromGitHub() {
+function loadButton() {
     // GitHub API URL für die Daten
     const githubApiUrl = 'https://api.github.com/repos/lebr2003/Block9/contents/Apotheke/ApoNEU/Medizinprodukte/daten.json';
 
@@ -432,6 +429,7 @@ function loadDataFromGitHub() {
         });
     })
     .catch(error => console.error('Fehler beim Laden der Daten von GitHub:', error));
+ event.preventDefault();
 }
 
 // Funktion zum Leeren der Tabelle
