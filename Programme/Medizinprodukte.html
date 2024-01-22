@@ -35,14 +35,6 @@
     
     <style>
         
-body {
-    font-family: Calibri, sans-serif;
-    margin-top: 30px;
-    overflow: hidden;
-}
-
-
-
 
         .header-words {
         display: flex;
@@ -286,7 +278,7 @@ button.disabled-button {
     <img class="logo" src="https://apotheke.leanderbrunar.net/Maltalogo.png" alt="Logo">
 <h1>Medizinprodukte</h1>
 
-<form id="form1">
+<form id="form1" style="font-family: Calibri, sans-serif; margin-top: 30px; overflow: hidden;">
 
     <input type="file" id="fileInput" accept=".txt">
     <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
@@ -385,7 +377,8 @@ button.disabled-button {
 
 </form>
 
-<form id="form2" style="display: none;">
+<form id="form2" style="display: none; font-family: Calibri, sans-serif; margin-top: 30px;">
+    
 <button type="button" class="blue-button" onclick="returnToForm1()">X</button>
 <input type="file" id="excelFileInput" accept=".xlsx">
 <button type="button" onclick="importExcelFile()">Vergleichen</button>
