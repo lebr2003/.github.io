@@ -7,31 +7,79 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://apotheke.leanderbrunar.net/ico/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://apotheke.leanderbrunar.net/ico/favicon-16x16.png">
 <link rel="manifest" href="https://apotheke.leanderbrunar.net/ico/site.webmanifest">
+    
+<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+        var isPageVisible = true;
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                isPageVisible = false;
+            } else {
+                isPageVisible = true;
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        window.addEventListener('beforeunload', function (e) {
+            if (isPageVisible) {
+                var confirmationMessage = "Durch das Neuladen der Seite gehen alle nicht gespeicherten Änderungen verloren.";
+                e.returnValue = confirmationMessage;
+                return confirmationMessage;
+            }
+        });
+    </script>
+
+
 
     <style>
 body {
     font-family: Calibri, sans-serif;
+    margin-top: 30px;
+    overflow: hidden;
 }
+         .header-words {
+        display: flex;
+        margin-top: 10px;
+        margin-left: 25px;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
 
-        .table-container {
-            position: relative;
-        }
+    .word-spacing-Menge {
+        margin-left: 45px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
 
-        .column-label {
-            position: absolute;
-            top: -25px;
-            font-weight: bold; /* Überschriften fettgedruckt */
-        }
+    .word-spacing-Ablaufdatum {
+        margin-left: 25px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
 
-        #dataTable {
-            margin-top: 45px;
-            width: 600px; /* Breite der gesamten Tabelle */
-        }
+    .word-spacing-Wirkstoff {
+        margin-left: 120px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
 
-        #dataTable th, #dataTable td {
-            width: 120px; /* Breite der einzelnen Felder/Spalten */
-        }
+    .word-spacing-Bezeichnung {
+        margin-left: 145px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
 
+ 
+          .table-container {
+        position: relative;
+        height: 70vh;
+        overflow: auto; /* Fügt den Scrollbalken hinzu, wenn der Inhalt die Höhe überschreitet */
+    }
+
+       
+       #dataTable {
+        width: 720px; /* Breite der gesamten Tabelle */
+    }
+
+       #dataTable th, #dataTable td {
+        width: 120px; /* Breite der einzelnen Felder/Spalten */
+    }
+  
         .info-button {
             display: inline-block;
             margin-left: 10px;
@@ -62,6 +110,7 @@ body {
             border-radius: 5px;
             cursor: pointer;
         }
+
 
 .unsaved-warning {
     background-color: yellow; /* Hintergrundfarbe auf Gelb setzen */
@@ -171,9 +220,10 @@ button.disabled-button {
             position: absolute;
             top: 0;
             right: 0;
-            margin: 10px; /* Anpassen des Abstands nach Bedarf */
+            margin: 30px; /* Anpassen des Abstands nach Bedarf */
             max-height: 50px; /* Anpassen der maximalen Höhe nach Bedarf */
         }
+
 
 
     </style>
@@ -268,13 +318,15 @@ button.disabled-button {
 
 
 
+<div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing-Menge">Menge</span>
+    <span class="word-spacing-Ablaufdatum">Ablaufdatum</span>
+    <span class="word-spacing-Wirkstoff">Wirkstoff</span>
+    <span class="word-spacing-Bezeichnung">Bezeichnung</span>
+</div>
+     
     <div class="table-container">
-        <div class="column-label" style="left: 35px;">Barcode</div>
-        <div class="column-label" style="left: 158px;">Menge</div>
-        <div class="column-label" style="left: 257px;">Ablaufdatum</div>
-        <div class="column-label" style="left: 390px;">Wirkstoff</div>
-        <div class="column-label" style="left: 497px;">Bezeichnung</div>
-
         <table id="dataTable" border="1">
             <!-- Weitere Tabellenzeilen hier einfügen -->
         </table>
