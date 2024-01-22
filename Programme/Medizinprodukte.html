@@ -89,12 +89,16 @@ body {
 
 
         #tableD {
-            width: 600px; /* Breite der gesamten Tabelle */
-        }
+        width: 600px; /* Breite der gesamten Tabelle */
+    }
 
-        #tableD th, #tableD td {
-            width: 120px; /* Breite der einzelnen Felder/Spalten */
-        }
+    #tableD th, #tableD td {
+        width: 120px; /* Breite der ersten drei Spalten */
+    }
+
+    #tableD td:nth-child(4) {
+        width: 240px; /* Breite der vierten Spalte */
+    }
 
         #tableC {
             width: 600px; /* Breite der gesamten Tabelle */
