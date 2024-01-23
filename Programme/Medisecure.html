@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>Medizinprodukte</title>
+<link rel="apple-touch-icon" sizes="180x180" href="https://apotheke.leanderbrunar.net/ico/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://apotheke.leanderbrunar.net/ico/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://apotheke.leanderbrunar.net/ico/favicon-16x16.png">
+<link rel="manifest" href="https://apotheke.leanderbrunar.net/ico/site.webmanifest">
+    
+<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+        var isPageVisible = true;
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                isPageVisible = false;
+            } else {
+                isPageVisible = true;
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        window.addEventListener('beforeunload', function (e) {
+            if (isPageVisible) {
+                var confirmationMessage = "Durch das Neuladen der Seite gehen alle nicht gespeicherten Änderungen verloren.";
+                e.returnValue = confirmationMessage;
+                return confirmationMessage;
+            }
+        });
+    </script>
+
+    
+    <style>
+        
+body {
+    font-family: Calibri, sans-serif;
+    margin-top: 30px;
+    overflow: hidden;
+}
+
+
+
+
+        .header-words {
+        display: flex;
+        margin-top: 10px;
+        margin-left: 40px;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .word-spacing-Menge {
+        margin-left: 75px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+    .word-spacing-Ablaufdatum {
+        margin-left: 55px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+    .word-spacing-Bezeichnung {
+        margin-left: 85px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+    .word-spacing-BezeichnungD {
+        margin-left: 50px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+    .word-spacing-MindMengeD {
+        margin-left: 45px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+    .word-spacing-LagerortD {
+        margin-left: 95px; /* Ändern Sie den Wert nach Bedarf, um den gewünschten Abstand zwischen den Wörtern zu setzen */
+    }
+
+
+        
+       .table-container {
+        position: relative;
+        height: 70vh;
+        overflow: auto; /* Fügt den Scrollbalken hinzu, wenn der Inhalt die Höhe überschreitet */
+    }
+
+        .container-form2 {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+       
+
+    #dataTable {
+        width: 600px; /* Breite der gesamten Tabelle */
+    }
+
+    #dataTable th, #dataTable td {
+        width: 120px; /* Breite der einzelnen Felder/Spalten */
+    }
+
+        
+
+        #tableB {
+            width: 600px; /* Breite der gesamten Tabelle */
+        }
+
+        #tableB th, #tableB td {
+            width: 120px; /* Breite der einzelnen Felder/Spalten */
+        }
+
+
+        #tableD {
+        width: 600px; /* Breite der gesamten Tabelle */
+        }
+
+        #tableD th, #tableD td {
+        width: 120px; /* Breite der ersten drei Spalten */
+        }
+
+        #tableD td:nth-child(4) {
+        width: 240px; /* Breite der vierten Spalte */
+        }
+
+        #tableC {
+            width: 600px; /* Breite der gesamten Tabelle */
+        }
+
+        #tableC th, #tableC td {
+            width: 120px; /* Breite der einzelnen Felder/Spalten */
+        }
+
+        .großer-abstand {
+            margin-top: 70px; /* Ändere den Wert nach deinen Wünschen */
+        }
+
+        .info-button {
+            display: inline-block;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+.text-input-container {
+            margin-top: 10px;
+        }
+
+        .text-input-container input {
+            margin-right: 10px;
+        }
+
+.red-button {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+.green-button {
+            background-color: green;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+.blue-button {
+            background-color: blue;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+.unsaved-warning {
+    background-color: yellow; /* Hintergrundfarbe auf Gelb setzen */
+    padding: 5px 10px; /* Raum um den Text herum hinzufügen */
+    border-radius: 5px; /* Abrundung der Ecken */
+    color: red; /* Textfarbe auf Schwarz setzen */
+    display: none; /* Standardmäßig ausblenden */
+}
+
+/* README-Popup (standardmäßig ausgeblendet) */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+.popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 80%;
+    max-height: 80%;
+    overflow: auto;
+}
+
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer; /* Ändert den Cursor-Stil zu "pointer" */
+}
+
+/* Füge diese CSS-Regel hinzu, um die bearbeitbare Tabelle zu gestalten */
+.editable {
+    background-color: #f7f7f7; /* Hintergrundfarbe für bearbeitbare Tabellen */
+    border: 1px solid #2196F3; /* Rahmen für bearbeitbare Tabellen */
+    cursor: text; /* Zeiger-Cursor für bearbeitbare Tabellen */
+}
+
+/* Stil für den kleineren Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px; /* Breite des Switch-Containers */
+  height: 20px; /* Höhe des Switch-Containers */
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 20px; /* Runder Slider */
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px; /* Höhe des runden Teils des Sliders */
+  width: 16px; /* Breite des runden Teils des Sliders */
+  left: 2px; /* Abstand links zum runden Teil des Sliders */
+  bottom: 2px; /* Abstand unten zum runden Teil des Sliders */
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%; /* Runde Form des runden Teils des Sliders */
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(19px);
+  -ms-transform: translateX(19px);
+  transform: translateX(19px);
+}
+
+/* Füge diese CSS-Regel hinzu, um die Buttons zu verblassen, wenn sie die Klasse "disabled-button" haben */
+button.disabled-button {
+    opacity: 0.5; /* Opazität ändern, um den Button zu verblassen */
+}
+
+.logo {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 30px; /* Anpassen des Abstands nach Bedarf */
+            max-height: 50px; /* Anpassen der maximalen Höhe nach Bedarf */
+        }
+
+
+    </style>
+</head>
+<body>
+    <img class="logo" src="https://apotheke.leanderbrunar.net/Maltalogo.png" alt="Logo">
+<h1>Medizinprodukte</h1>
+
+<form id="form1">
+
+    <input type="file" id="fileInput" accept=".txt">
+    <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
+<button type="button" onclick="refreshTable()">Refresh</button>
+<button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
+<button type="button" onclick="openReadmePopup()">README</button> 
+<button type="button" type="button" class="blue-button" onclick="openComparisonTable()">Menge</button>
+<button class="green-button" onclick="exportTextFile()">Exportieren</button>
+<span id="unsavedWarning" class="unsaved-warning"><strong>Tabelle nicht gespeichert!</strong></span>
+<label class="switch">
+  <input type="checkbox" id="editToggle">
+  <span class="slider round"></span>
+</label>
+
+
+
+
+<!-- README-Popup -->
+<div id="readmePopup" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="closeReadmePopup()">&times;</span>
+        <h2>READ ME</h2>
+
+        <p><strong>Datei auswählen und importieren:</strong> Datei befindet sich im geteilten Ordner im Unterverzeichnis <em> Inventar_Medizinprodukte</em>. Bitte die neueste Datei auswählen.</p>
+
+        <p><strong>Refresh:</strong> Mit Refresh werden alle Einträge, die denselben Barcode und dasselbe Ablaufdatum haben, zusammengeführt. Die Menge wird addiert. Die Einträge werden nach Ablaufdatum sortiert. Zusätzlich werden alle Einträge, die bereits abgelaufen sind oder im nächsten Monat ablaufen, rot markiert.</p>
+
+        <p><strong>Ordnen nach Bezeichnung:</strong> Die Einträge werden alphabetisch nach der Bezeichnung geordnet. (Abgelaufene Einträge werden nur mit <strong>Refresh</strong> rot gefärbt.)</p>
+
+         <p><strong>Menge:</strong> Bei diesem Button wird ein neues Fenster angezeigt. Die Einträge der Tabelle werden nach dem Barcode zusammengefasst, dabei werden die Mengen addiert. Das Ablaufdatum wird hier ignoriert. Dadurch sieht man, wie viel von einem Produkt insgesamt da ist.</p>
+    <ul>
+            <li><strong>Datei auswählen:</strong> Bitte wähle die Excel-Datei <em>Inventar_Lagerort, min. Lagermenge</em> aus. Dort sind die Mindestlagermengen der Produkte eingetragen. (Das Programm wählt automatisch das Blatt 2 der Excel-Datei aus.)</li>
+            <li><strong>Vergleichen:</strong> Das Inventar wird mit der Mindestlagermenge verglichen. In Spalte 2 steht die derzeitige Menge, in Spalte 3 steht die Mindestlagermenge. Ist die Menge eines Produktes im Inventar kleiner oder gleich der Mindestlagermenge, wird die Zeile orange markiert. Produkte, die im Inventar aber nicht in der Excel-Datei stehen, werden auch orange markiert. Die 3. Spalte bleibt dabei leer.</li>
+            <li>untere Tabelle: Hier werden Produkte angezeigt und orange gefärbt, die sich im Inventar befinden sollten, aber nicht im Inventar vorhanden sind</li>
+            <li><strong>Schließen (x):</strong> Das Fenster mit der gerade angezeigten Vergleichstabelle wird geschlossen (und nicht gespeichert). Es wird nun wieder die Tabelle angezeigt, die vor dem Klick auf den Button <strong>Menge</strong> gezeigt wurde. </li>
+
+        </ul>
+
+
+
+        <p><strong>Exportieren:</strong> Tabelle wird als .txt exportiert und der Dateiname mit dem heutigen Datum und Uhrzeit versehen. Die Reihenfolge der Einträge in der .txt-Datei ist so wie in der aktuellen Tabelle. Datei bitte im geteilten Ordner im Unterverzeichnis <em> Inventar_Medizinprodukte</em> speichern.</p>
+
+         <p><strong>On/Off-Schalter:</strong> Wenn der Schalter an ist (blau), kann jedes Tabellenfeld per Mausklick bearbeitet werden. Alle Buttons sind dabei deaktiviert. <span style="color: red;">Kein Tabellenfeld darf komplett leer sein!</span></p>
+
+<p><strong>Texteingabefelder:</strong></p>
+        <ul>
+            <li>Barcode: Nach Eingabe des Barcodes und Klicken auf <strong>Suchen</strong> wird "Bezeichnung" automatisch in das Texteingabefeld hinzugefügt.</li>
+
+            <li>Bezeichnung: Nach Eingabe der Bezeichnung und Klicken auf <strong>Suchen</strong> wird "Barcode" automatisch in das Texteingabefeld hinzugefügt. (Sollte bereits etwas in "Barcode" stehen, wird der Begriff in "Bezeichnung" bei der Suche ignoriert.)</li>
+
+            <li>Menge: Die Menge des Eintrages muss hinzugefügt werden.</li>
+
+            <li>Ablaufdatum: Das Ablaufdatum des Eintrages muss hinzugefügt werden. (Im Format MM/YY)</li>
+        </ul>
+        <p><strong>Suchen:</strong> "Barcode" oder "Bezeichnung" werden automatisch in die Texteingabefelder hinzugefügt, wenn eines dieser 2 Textfelder ausgefüllt ist und wenn der Eintrag bereits in der Tabelle vorhanden ist. Die Priorität der Suche ist Barcode, Bezeichnung. Sollte der Eintrag noch nicht in der Tabelle vorhanden sein, kommt die Meldung: Neues Produkt! In dem Fall müssen alle Texteingabefelder manuell ausgefüllt werden.</p>
+
+        <p><strong>Neuer Eintrag:</strong> Ein neuer Eintrag mit den Begriffen/Werten der Texteingabefelder wird in die Tabelle hinzugefügt. Der Button funktioniert nur dann, wenn alle Texteingabefelder ausgefüllt sind.</p>
+
+
+        <p><strong style="color: red; font-weight: bold;">Speicherung der Einträge:</strong> Die Tabelle, die angezeigt wird, ist nie in der Webanwendung gespeichert. Daher muss am Ende der Session die Tabelle über <strong>Exportieren</strong> gespeichert werden. Bei Neuladen oder Beenden der Seite sowie bei erneutem Importieren wird die Tabelle zurückgesetzt.</p>
+
+        <p><strong style="color: red; font-weight: bold;">Datensicherheit:</strong> Die Daten in der Tabelle sind nur lokal auf dem Gerät sichtbar und auch nur so lange, bis die Webanwendung aktualisiert wird bzw. beendet wird. Die Daten gelangen nicht ins Internet.</p>
+
+        <p><strong style="color: red; font-weight: bold;">Bei Fragen:</strong> Leander Brunar (leander@brunar.com)</p>
+    </div>
+</div>
+
+
+
+
+   <div class="text-input-container">
+        <!-- Texteingabefelder -->
+        <input type="text" placeholder="Barcode">
+        <input type="text" placeholder="Menge">
+        <input type="text" placeholder="Ablaufdatum">
+        <input type="text" placeholder="Bezeichnung">
+<button type="button" onclick="search()">Suchen</button>
+<button type="button" class="red-button" onclick="addNewEntry()">Neuer Eintrag</button>
+</div>
+
+
+<div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing-Menge">Menge</span>
+    <span class="word-spacing-Ablaufdatum">Ablaufdatum</span>
+    <span class="word-spacing-Bezeichnung">Bezeichnung</span>
+</div>
+
+
+
+    <div class="table-container">
+    <table id="dataTable" border="1">
+        <!-- Weitere Tabellenzeilen hier einfügen -->
+    </table>
+</div>
+
+</form>
+
+<form id="form2" style="display: none;">
+<button type="button" class="blue-button" onclick="returnToForm1()">X</button>
+<input type="file" id="excelFileInput" accept=".xlsx">
+<button type="button" onclick="importExcelFile()">Vergleichen</button>
+
+    <div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing-Menge">Menge</span>
+    <span class="word-spacing-Ablaufdatum">Min. Menge</span>
+    <span class="word-spacing-Bezeichnung">Bezeichnung</span>
+    </div>
+
+<div class="container-form2"> 
+        
+ <div>
+       
+        <table id="tableB" border="1">
+            <!-- Hier fügen Sie Ihre Tabelle für Formular 2 ein -->
+        </table>
+    </div>
+
+
+ <p class="großer-abstand">Produkte, die nicht im Inventar enthalten sind:</p>
+
+    <div class="header-words">
+    <span>Barcode</span>
+    <span class="word-spacing-BezeichnungD">Bezeichnung</span>
+    <span class="word-spacing-MindMengeD">Min. Menge</span>
+    <span class="word-spacing-LagerortD">Lagerort</span>
+    </div>
+
+ 
+    
+    <div>
+        
+        <table id="tableD" border="1">
+            <!-- Hier fügen Sie Ihre Tabelle für Formular 2 ein -->
+        </table>
+    </div>
+</div>
+
+    <div class="table-container">
+        <table id="tableC">
+            <!-- Hier fügen Sie Ihre Tabelle für Formular 2 ein -->
+        </table>
+    </div>
+
+</form>
+
+    <script>
+
+function importTextFile() {
+    const fileInput = document.getElementById('fileInput');
+    const dataTable = document.getElementById('dataTable');
+    const file = fileInput.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const content = e.target.result;
+            const lines = content.trim().split('\n'); // Zeilen aufräumen und aufteilen
+
+            // Lösche den Inhalt der Tabelle
+            dataTable.innerHTML = '';
+
+            for (const line of lines) {
+                const data = line.split('; ');
+                const row = document.createElement('tr');
+
+                for (const item of data) {
+                    const cell = document.createElement('td');
+                    cell.textContent = item;
+                    row.appendChild(cell);
+                }
+
+                dataTable.appendChild(row);
+            }
+        };
+
+        reader.readAsText(file);
+    } else {
+        showAlert("Bitte wählen Sie eine Textdatei aus.");
+    }
+event.preventDefault();
+}
+
+
+
+
+function exportTextFile() {
+    const dataTable = document.getElementById('dataTable');
+    const rows = dataTable.getElementsByTagName('tr');
+    let content = '';
+
+    for (const row of rows) {
+        const cells = row.getElementsByTagName('td');
+        const rowData = [];
+        for (const cell of cells) {
+            rowData.push(cell.textContent);
+        }
+        content += rowData.join('; ') + '\n';
+    }
+
+    // Dateinamen mit dem aktuellen Datum und Uhrzeit erstellen
+    const now = new Date();
+    const timestamp = now.toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).replace(/[^0-9]/g, '_');
+
+    const fileName = `Medizinprodukte_${timestamp}.txt`;
+
+    // Erstellen eines Blob-Objekts für den Dateiinhalt
+    const blob = new Blob([content], { type: 'text/plain' });
+
+    // Erstellen eines Download-Links und Klicken auf den Link
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+event.preventDefault();
+}
+
+
+function refreshTable() {
+    const dataTable = document.getElementById('dataTable');
+    const rows = dataTable.getElementsByTagName('tr');
+
+    const uniqueRows = new Map();
+
+    // Ermitteln von x (letzte zwei Ziffern des aktuellen Jahres) und y (aktuelle Monatszahl)
+    const today = new Date();
+    const x = today.getFullYear() % 100;
+    const y = today.getMonth() + 2; // Beachten Sie, dass die Monate von 0 (Januar) bis 11 (Dezember) nummeriert sind
+
+    // Durchlaufen Sie die Zeilen der Tabelle
+    for (const row of rows) {
+        const cells = row.getElementsByTagName('td');
+        const key = cells[0].textContent + cells[2].textContent;
+
+        // Ermitteln von z (zweistellige Zahl nach dem / in Spalte 3) und der ersten zweistelligen Zahl vor dem /
+        const z = parseInt(cells[2].textContent.split('/')[1], 10);
+        const firstNumber = parseInt(cells[2].textContent.split('/')[0], 10);
+
+        if (uniqueRows.has(key)) {
+            // Eine Zeile mit dem gleichen Schlüssel wurde bereits gefunden
+            // Extrahiere den Wert der zweiten Spalte
+            const currentValue = uniqueRows.get(key).getElementsByTagName('td')[1].textContent;
+            const newValue = cells[1].textContent;
+
+            // Extrahiere die Zahlen aus den Werten und aktualisiere sie
+            const currentNumber = parseNumber(currentValue);
+            const newNumber = parseNumber(newValue);
+            const totalNumber = currentNumber + newNumber;
+
+            // Setze den Text in der zweiten Spalte auf die aktualisierte Summe
+            uniqueRows.get(key).getElementsByTagName('td')[1].textContent = formatValue(totalNumber, currentValue);
+        } else {
+            // Fügen Sie die Zeile als eindeutige Zeile hinzu
+            uniqueRows.set(key, row);
+        }
+    }
+
+    // Löschen Sie den Inhalt der Tabelle
+    dataTable.innerHTML = '';
+
+    // Fügen Sie die eindeutigen Zeilen zurück in die Tabelle ein
+    for (const row of uniqueRows.values()) {
+        dataTable.appendChild(row);
+    }
+
+    // Sortieren Sie die Tabelle nach den gewünschten Prioritäten
+    const sortedRows = Array.from(dataTable.getElementsByTagName('tr')).sort((a, b) => {
+        const keyA = a.cells[2].textContent.split('/')[1]; // Zweistellige Zahl nach dem /
+        const keyB = b.cells[2].textContent.split('/')[1];
+
+        if (keyA !== keyB) {
+            return parseInt(keyA, 10) - parseInt(keyB, 10);
+        }
+
+        const firstNumberA = parseInt(a.cells[2].textContent.split('/')[0], 10); // Erste zweistellige Zahl vor dem /
+        const firstNumberB = parseInt(b.cells[2].textContent.split('/')[0], 10);
+
+        if (firstNumberA !== firstNumberB) {
+            return firstNumberA - firstNumberB;
+        }
+
+        return a.cells[3].textContent.localeCompare(b.cells[3].textContent); // Alphabetische Sortierung in Spalte 4
+    });
+
+    // Löschen Sie den Inhalt der Tabelle und fügen Sie die sortierten Zeilen zurück ein
+    dataTable.innerHTML = '';
+    for (const row of sortedRows) {
+        dataTable.appendChild(row);
+    }
+
+    // Nach dem Sortieren: Färben Sie die Zeilen rot
+    for (const row of dataTable.getElementsByTagName('tr')) {
+        const cells = row.getElementsByTagName('td');
+        const z = parseInt(cells[2].textContent.split('/')[1], 10);
+        const firstNumber = parseInt(cells[2].textContent.split('/')[0], 10);
+
+        if (z <= x && firstNumber <= y) {
+            row.style.backgroundColor = 'red';
+        } else {
+            row.style.backgroundColor = 'white';
+        }
+    }
+    showUnsavedWarning();
+// Rufe die Funktion sortTableByzero() am Ende von refreshTable() auf
+    sortTableByzero();
+
+event.preventDefault();
+
+}
+
+// Hilfsfunktion zum Extrahieren und Verarbeiten von Werten
+function parseNumber(text) {
+    const match = text.match(/(-?\d+).*|(-?\d+\s*[^\d]*)/); // Sucht nach einer Zahl mit optionaler Vorzeichen (-) und optionalen Zeichen am Ende
+    if (match) {
+        return parseInt(match[1], 10) || 0; // Gibt die gefundene Zahl als Ganzzahl zurück, oder 0, wenn keine Zahl gefunden wurde
+    }
+    return 0; // Wenn keine Zahl gefunden wurde, wird 0 zurückgegeben
+}
+
+// Hilfsfunktion zum Formatieren von Werten als Text
+function formatValue(number, originalValue) {
+    if (originalValue.includes(" ")) {
+        // Wenn der ursprüngliche Wert Leerzeichen enthält, füge die Einheiten beibehalten
+        return number + " " + originalValue.split(" ")[1];
+    }
+    return number.toString(); // Andernfalls gibt die Zahl als Text zurück
+}
+
+// Funktion zum Sortieren der Zeilen mit 0 in Spalte 2
+function sortTableByzero() {
+    var table = document.getElementById("dataTable");
+    var rows = Array.from(table.rows);
+
+    rows.sort(function(a, b) {
+        // Vergleiche die Werte in Spalte 2 (Menge)
+        var valueA = a.cells[1].textContent.trim().toLowerCase();
+        var valueB = b.cells[1].textContent.trim().toLowerCase();
+
+        // Verschiebe Zeilen mit Wert 0 nach unten
+        if (valueA === "0" && valueB !== "0") return 1;
+        if (valueA !== "0" && valueB === "0") return -1;
+
+        
+    });
+
+    // Entferne bestehende Zeilen aus der Tabelle
+    for (var i = 0; i < rows.length; i++) {
+        table.appendChild(rows[i]);
+    }
+}
+
+
+
+
+function sortTableByWirkstoff() {
+    const dataTable = document.getElementById('dataTable');
+    const rows = Array.from(dataTable.getElementsByTagName('tr'));
+
+    rows.sort((a, b) => {
+        const wirkstoffA = a.cells[3].textContent;
+        const wirkstoffB = b.cells[3].textContent;
+        return wirkstoffA.localeCompare(wirkstoffB);
+    });
+
+    dataTable.innerHTML = ''; // Tabelle leeren
+
+    for (const row of rows) {
+        dataTable.appendChild(row);
+    }
+event.preventDefault();
+}
+
+function search() {
+    // Prüfe, ob im Textfeld "Barcode" etwas steht
+    var barcodeInput = document.querySelector('input[placeholder="Barcode"]').value.trim();
+    if (barcodeInput) {
+        // Code 1: Suche nach Barcode
+        searchByBarcode(barcodeInput);
+        return;
+    }
+
+
+    // Prüfe, ob im Textfeld "Bezeichnung" etwas steht
+    var BezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]').value.trim();
+    if (BezeichnungInput) {
+        // Code 3: Suche nach Bezeichnung
+        searchByBezeichnung(BezeichnungInput);
+        return;
+    }
+
+    // Wenn keines der Textfelder ausgefüllt ist, hier kannst du optionalen Code hinzufügen.
+    // Dieser wird ausgeführt, wenn keines der Textfelder etwas enthält.
+
+    showAlert("Bitte Suchbegriff eingeben.");
+event.preventDefault();
+}
+
+function searchByBarcode(barcode) {
+    // Dein Code zur Suche nach dem Barcode
+    // Beispiel:
+    var table = document.getElementById('dataTable');
+    var rows = table.getElementsByTagName('tr');
+    var found = false;
+
+    for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName('td');
+        if (cells.length > 0) {
+            var cellValue = cells[0].textContent.trim();
+            if (cellValue === barcode) {
+                // Barcode wurde gefunden
+                var BezeichnungValue = cells[3].textContent;
+
+                // Setze die gefundenen Werte in das Textfeld "Bezeichnung"
+                
+                document.querySelector('input[placeholder="Bezeichnung"]').value = BezeichnungValue;
+
+                found = true;
+                break;
+            }
+        }
+    }
+
+    if (!found) {
+        showAlert("Neues Produkt!");
+    }
+}
+
+function searchByBezeichnung(Bezeichnung) {
+    // Textfeld "Bezeichnung" auslesen
+    var BezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]').value;
+
+    // Textfeld "Barcode" leeren
+    document.querySelector('input[placeholder="Barcode"]').value = '';
+
+    // Tabelle durchsuchen
+    var table = document.getElementById('dataTable');
+    var rows = table.getElementsByTagName('tr');
+    var found = false;
+
+    for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName('td');
+        if (cells.length > 0) {
+            var cellValue = cells[3].textContent.trim().toLowerCase();
+var BezeichnungInputNormalized = BezeichnungInput.trim().toLowerCase();
+
+if (cellValue === BezeichnungInputNormalized) {
+                // Begriff wurde in Spalte 4 gefunden
+                var barcodeValue = cells[0].textContent; // Wert in Spalte 1 (Barcode)
+               
+                // Setze die gefundenen Werte in das Textfeld "Barcode"
+                document.querySelector('input[placeholder="Barcode"]').value = barcodeValue;
+               
+                found = true;
+                break; // Der Begriff wurde gefunden, beende die Schleife
+            }
+        }
+    }
+
+    // Meldung, wenn Begriff nicht gefunden wurde
+    if (!found) {
+        showAlert("Neues Produkt!");
+    }
+}
+
+
+function addNewEntry() {
+    // Zugriff auf die Textfelder
+    const barcodeInput = document.querySelector('input[placeholder="Barcode"]');
+    const mengeInput = document.querySelector('input[placeholder="Menge"]');
+    const ablaufdatumInput = document.querySelector('input[placeholder="Ablaufdatum"]');
+    const BezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]');
+
+    // Überprüfen, ob alle Felder ausgefüllt sind
+    if (
+        barcodeInput.value === '' ||
+        mengeInput.value === '' ||
+        ablaufdatumInput.value === '' ||
+        BezeichnungInput.value === ''
+    ) {
+        showAlert("Alle Felder ausfüllen!");
+        return;
+    }
+
+    // Zugriff auf die Tabelle
+    const table = document.getElementById('dataTable');
+
+    // Neue Zeile erstellen
+    const newRow = table.insertRow(-1);
+
+    // Neue Zellen für die Zeile erstellen und Werte aus den Textfeldern einfügen
+    const cell1 = newRow.insertCell(0);
+    cell1.innerHTML = barcodeInput.value;
+
+    const cell2 = newRow.insertCell(1);
+    cell2.innerHTML = mengeInput.value;
+
+    const cell3 = newRow.insertCell(2);
+    cell3.innerHTML = ablaufdatumInput.value;
+
+    const cell4 = newRow.insertCell(3);
+    cell4.innerHTML = BezeichnungInput.value;
+
+    // Textfelder leeren
+    barcodeInput.value = '';
+    mengeInput.value = '';
+    ablaufdatumInput.value = '';
+    BezeichnungInput.value = '';
+
+    // Fokus auf das Barcode-Textfeld legen
+    barcodeInput.focus();
+showUnsavedWarning();
+event.preventDefault();
+}
+
+// Diese Funktion überprüft, ob Daten in der Tabelle vorhanden sind.
+function isTableNotEmpty() {
+    const table = document.getElementById('dataTable');
+    // Überprüfe, ob es Zeilen (abgesehen von der Header-Zeile) in der Tabelle gibt.
+    return table.rows.length > 1;
+}
+
+// Diese Funktion zeigt die Warnung, wenn die Tabelle nicht gespeichert ist.
+function showUnsavedWarning() {
+    const unsavedWarning = document.getElementById('unsavedWarning');
+    if (isTableNotEmpty()) {
+        unsavedWarning.style.display = 'inline';
+    } else {
+        unsavedWarning.style.display = 'none';
+    }
+}
+
+// Funktion zum Öffnen des README-Popup
+function openReadmePopup() {
+    var popup = document.getElementById('readmePopup');
+    popup.style.display = 'block';
+event.preventDefault();
+}
+
+// Funktion zum Schließen des README-Popup
+function closeReadmePopup() {
+    var popup = document.getElementById('readmePopup');
+    popup.style.display = 'none';
+}
+
+
+
+// Funktion zum Aktivieren/Deaktivieren der Buttons
+function toggleButtonsOnSwitch() {
+    const editToggle = document.getElementById("editToggle");
+    const buttons = document.querySelectorAll("button"); // Alle Buttons auswählen
+
+    buttons.forEach(function(button) {
+        if (editToggle.checked) {
+            // Wenn der Switch "On" ist, deaktiviere alle Buttons außer dem Switch selbst
+            if (button !== editToggle) {
+                button.disabled = true;
+                button.classList.add("disabled-button"); // Füge eine CSS-Klasse hinzu, um den Button zu verblassen
+            }
+        } else {
+            // Wenn der Switch "Off" ist, aktiviere alle Buttons
+            button.disabled = false;
+            button.classList.remove("disabled-button"); // Entferne die CSS-Klasse, um den Button zu reaktivieren
+        }
+    });
+}
+
+
+// Event-Listener für den Switch-Zustand
+const editToggle = document.getElementById("editToggle");
+editToggle.addEventListener("change", function() {
+    toggleButtonsOnSwitch(); // Aktualisiere die Button-Zustände beim Umschalten des Switches
+});
+
+// Funktion zum Bearbeiten der Tabelle
+function toggleTableEditing() {
+    const editToggle = document.getElementById("editToggle");
+    const table = document.getElementById("dataTable");
+
+    if (editToggle.checked) {
+        table.contentEditable = true;
+        table.classList.add("editable"); // Füge eine CSS-Klasse für bearbeitbare Tabellen hinzu
+    } else {
+        table.contentEditable = false;
+        table.classList.remove("editable"); // Entferne die CSS-Klasse, um die Tabelle nicht bearbeitbar zu machen
+    }
+}
+
+// Event-Listener für die Bearbeitbarkeit der Tabelle
+editToggle.addEventListener("change", toggleTableEditing);
+
+
+function showAlert(message) {
+    const alertBox = document.createElement("div");
+    alertBox.textContent = message;
+    alertBox.style.backgroundColor = "yellow";
+    alertBox.style.padding = "10px";
+    alertBox.style.borderRadius = "5px";
+    alertBox.style.color = "red";
+    alertBox.style.position = "fixed";
+    alertBox.style.top = "20px";
+    alertBox.style.left = "20px";
+    alertBox.style.zIndex = "1000";
+
+    document.body.appendChild(alertBox);
+
+    setTimeout(() => {
+        alertBox.style.display = "none";
+    }, 2500); // Verstecke die Benachrichtigung nach 2,5 Sekunden
+}
+
+
+function openComparisonTable() {
+    const tableA = document.getElementById('dataTable');
+    const tableB = document.getElementById('tableB');
+
+    // Kopiere die Tabelle von Formular 1 zu Formular 2
+    tableB.innerHTML = tableA.innerHTML;
+
+    // Rufe die Funktion zum Zusammenfassen und Löschen auf
+    mergeAndClearTable(tableB);
+
+    // Setze den Hintergrund aller Zeilen in Tabelle B auf weiß
+    const rowsB = tableB.getElementsByTagName('tr');
+    for (const row of rowsB) {
+        row.style.backgroundColor = 'white';
+    }
+
+
+    // Zeige Formular 2
+    document.getElementById('form1').style.display = 'none';
+    document.getElementById('form2').style.display = 'block';
+
+    event.preventDefault();
+}
+
+
+// Funktion zum Zusammenfassen der Tabelle und Löschen von Spalte 3
+function mergeAndClearTable(table) {
+    const rows = table.getElementsByTagName('tr');
+    const mergedRows = new Map();
+
+    for (const row of rows) {
+        const cells = row.getElementsByTagName('td');
+        if (cells.length >= 2) {
+            const key = cells[0].textContent;
+
+            if (mergedRows.has(key)) {
+                // Eine Zeile mit dem gleichen Schlüssel wurde bereits gefunden
+                const currentValue = parseNumber(cells[1].textContent);
+                const newValue = parseNumber(mergedRows.get(key).getElementsByTagName('td')[1].textContent);
+                const totalValue = currentValue + newValue;
+
+                // Aktualisiere die Zellen in Spalte 2
+                mergedRows.get(key).getElementsByTagName('td')[1].textContent = formatValue(totalValue, cells[1].textContent);
+            } else {
+                // Füge die Zeile als eindeutige Zeile hinzu
+                mergedRows.set(key, row);
+            }
+
+            // Lösche die Werte in Spalte 3
+            cells[2].textContent = '';
+        }
+    }
+
+    // Lösche den Inhalt der Tabelle und füge die zusammengefassten Zeilen zurück ein
+    table.innerHTML = '';
+    for (const row of mergedRows.values()) {
+        table.appendChild(row);
+    }
+}
+
+
+// Kehrt von Formular 2 zu Formular 1 zurück.
+function returnToForm1() {
+            const form1 = document.getElementById('form1');
+            const form2 = document.getElementById('form2');
+            const tableB = document.getElementById('tableB');
+            const tableC = document.getElementById('tableC');
+            const tableD = document.getElementById('tableD');
+
+         // Leeren Sie den Inhalt von Tabelle B, indem Sie den innerHTML-Wert auf einen leeren String setzen
+         tableB.innerHTML = '';
+         tableC.innerHTML = '';
+         tableD.innerHTML = '';
+
+            form2.style.display = 'none'; // Verstecke Formular 2
+            form1.style.display = 'block'; // Zeige Formular 1
+           
+           event.preventDefault();
+}
+
+
+function importExcelFile() {
+    const fileInput = document.getElementById('excelFileInput');
+    const tableC = document.getElementById('tableC');
+    const file = fileInput.files[0];
+
+    // Verstecke die Tabelle während des Imports und behalte sie unsichtbar
+    tableC.style.display = 'none';
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const content = e.target.result;
+            const workbook = XLSX.read(content, { type: 'binary' });
+
+            // Annahme: Wir nehmen das zweite Arbeitsblatt
+            const sheetName = workbook.SheetNames[1];
+            const sheet = workbook.Sheets[sheetName];
+
+            // Konvertiere das Arbeitsblatt in ein 2D-Array
+            const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            // Behalte nur die ersten 4 Spalten (A bis D)
+            const trimmedData = data.map(row => row.slice(0, 4));
+
+            // Formatieren der Zahlen, um sie ohne Tausender-Trennzeichen oder Dezimalstellen anzuzeigen
+            const formattedData = trimmedData.map(row => {
+                return row.map(cell => {
+                    if (typeof cell === 'number') {
+                        return cell.toString();
+                    }
+                    return cell;
+                });
+            });
+
+            // Konvertiere das bearbeitete 2D-Array zurück in HTML
+            const htmlTable = XLSX.utils.aoa_to_sheet(formattedData);
+
+            // Fügen Sie die HTML-Tabelle in TableC ein
+            tableC.innerHTML = XLSX.utils.sheet_to_html(htmlTable);
+
+            // Entfernen Sie die erste Zeile (Zeile 1) aus der Tabelle
+            tableC.deleteRow(0);
+
+            sortByWirkstoffTableB();
+
+            // Rufe die Funktionen nacheinander auf
+            compareAndDisplay();
+        };
+
+        reader.readAsBinaryString(file);
+    } else {
+        showAlert("Bitte eine Excel-Datei auswählen.");
+    }
+}
+
+function compareAndDisplay() {
+    compareTables(); // Funktion compareTables aufrufen
+    displayMissingRows(); // Funktion displayMissingRows aufrufen
+}
+
+
+
+
+function compareTables() {
+  const tableB = document.getElementById("tableB");
+  const tableC = document.getElementById("tableC");
+
+  const rowsB = tableB.getElementsByTagName("tr");
+  const rowsC = tableC.getElementsByTagName("tr");
+
+  for (let i = 0; i < rowsB.length; i++) {
+    const cellsB = rowsB[i].getElementsByTagName("td");
+
+    // Wert in Spalte 2 von Table B
+    const valueInColumn2 = parseInt(cellsB[1].textContent, 10);
+    // Wert in Spalte 3 von Table B
+    const valueInColumn3 = parseInt(cellsB[2].textContent, 10);
+
+    // Durchsuchen von Table C nach dem Wert in Spalte 1
+    for (let j = 0; j < rowsC.length; j++) {
+      const cellsC = rowsC[j].getElementsByTagName("td");
+      if (cellsC[0].textContent === cellsB[0].textContent) {
+        // Wert in Spalte 3 von Table C
+        const valueFromTableC = cellsC[2].textContent;
+
+        // Einfügen des Werts in Spalte 3 von Table B
+        cellsB[2].textContent = valueFromTableC;
+
+        // Brechen Sie die Schleife, wenn eine Übereinstimmung gefunden wurde
+        break;
+      }
+    }
+  }
+
+  // Jetzt, nachdem alle Werte in Spalte 3 aktualisiert wurden, färben Sie die Zeilen
+  for (let i = 0; i < rowsB.length; i++) {
+    const cellsB = rowsB[i].getElementsByTagName("td");
+
+    // Wert in Spalte 2 von Table B
+    const valueInColumn2 = parseInt(cellsB[1].textContent, 10);
+    // Wert in Spalte 3 von Table B
+    const valueInColumn3 = parseInt(cellsB[2].textContent, 10);
+
+    // Färben Sie die Zeile orange, wenn Spalte 2 kleiner oder gleich Spalte 3 ist oder wenn Spalte 3 leer ist
+    if (valueInColumn2 <= valueInColumn3 || isNaN(valueInColumn3)) {
+      rowsB[i].style.backgroundColor = "orange";
+    }
+  }
+
+displayMissingRows();
+
+  event.preventDefault();
+}
+
+
+function displayMissingRows() {
+    const tableB = document.getElementById("tableB");
+    const tableC = document.getElementById("tableC");
+    const tableD = document.getElementById("tableD");
+
+    const rowsB = tableB.getElementsByTagName("tr");
+    const rowsC = tableC.getElementsByTagName("tr");
+
+    // Verstecke TableD während des Vergleichs und mache es immer orange
+    tableD.style.display = 'none';
+    tableD.style.backgroundColor = 'orange';
+
+    // Sammle die Zeilen, die in TableC stehen, aber nicht in TableB
+    const missingRows = [];
+
+    for (let i = 0; i < rowsC.length; i++) {
+        const cellsC = rowsC[i].getElementsByTagName("td");
+        const valueInColumn1C = cellsC[0].textContent;
+
+        let found = false;
+        for (let j = 0; j < rowsB.length; j++) {
+            const cellsB = rowsB[j].getElementsByTagName("td");
+            const valueInColumn1B = cellsB[0].textContent;
+
+            if (valueInColumn1C === valueInColumn1B) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            missingRows.push(rowsC[i].outerHTML);
+        }
+    }
+
+    // Füge die fehlenden Zeilen in TableD ein
+    tableD.innerHTML = missingRows.join("");
+
+    // Zeige TableD an
+    tableD.style.display = 'block';
+}
+
+
+function sortByWirkstoffTableB() {
+    const tableB = document.getElementById('tableB');
+    const rows = Array.from(tableB.getElementsByTagName('tr'));
+
+    rows.sort((a, b) => {
+        const wirkstoffA = a.cells[3].textContent;
+        const wirkstoffB = b.cells[3].textContent;
+        return wirkstoffA.localeCompare(wirkstoffB);
+    });
+
+    tableB.innerHTML = ''; // Tabelle leeren
+
+    for (const row of rows) {
+        tableB.appendChild(row);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    let selectedIndex = 0; // Index des aktuell anvisierten Elements
+
+    // Extrahiere die Daten aus Spalte 4 (Index 3) der Tabelle für die Autocomplete-Funktion.
+    const extractBezeichnungData = () => {
+        const bezeichnungData = [];
+        const dataTable = document.getElementById('dataTable');
+        for (let i = 0; i < dataTable.rows.length; i++) {
+            const cellValue = dataTable.rows[i].cells[3].innerText.trim(); // Spalte 4 (Index 3)
+            if (cellValue !== '') {
+                bezeichnungData.push(cellValue);
+            }
+        }
+        return bezeichnungData;
+    };
+
+    const bezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]');
+    const unsavedWarning = document.getElementById('unsavedWarning');
+
+    // Aktiviere die Autocomplete-Funktion für das Bezeichnung-Textfeld.
+    bezeichnungInput.addEventListener('input', function () {
+        const inputText = this.value.toLowerCase();
+        const bezeichnungData = extractBezeichnungData();
+        const filteredData = bezeichnungData.filter(bezeichnung => bezeichnung.toLowerCase().includes(inputText));
+        createAutocompleteDropdown(filteredData);
+        selectedIndex = 0; // Setze den Index auf das oberste Element zurück, wenn sich der Text ändert
+        highlightSelectedItem(); // Hervorhebe standardmäßig das oberste Ergebnis
+    });
+
+    // Erzeuge das Dropdown-Menü für die Autocomplete-Funktion.
+    const createAutocompleteDropdown = (data) => {
+        closeAutocompleteDropdown(); // Schließe vorhandene Dropdown-Menüs
+
+        if (data.length === 0) {
+            return;
+        }
+
+        const maxRows = 6; // Maximal 6 Zeilen
+        const dropdownContainer = document.createElement('div');
+        dropdownContainer.classList.add('autocomplete-dropdown');
+
+        const inputRect = bezeichnungInput.getBoundingClientRect();
+        dropdownContainer.style.position = 'absolute';
+        dropdownContainer.style.top = inputRect.bottom + 'px';
+        dropdownContainer.style.left = inputRect.left + 'px';
+        dropdownContainer.style.width = bezeichnungInput.offsetWidth + 'px';
+        dropdownContainer.style.backgroundColor = '#fff'; // Hintergrundfarbe
+        dropdownContainer.style.border = '1px solid #ccc'; // Rahmen
+        dropdownContainer.style.overflowY = data.length > maxRows ? 'scroll' : 'auto'; // Füge einen Scrollbalken hinzu, wenn mehr als 6 Zeilen vorhanden sind
+        dropdownContainer.style.maxHeight = `${maxRows * 20}px`; // Höhe für maximal 6 Zeilen (Annahme: 20px pro Zeile)
+
+        // Verwende ein Set, um eindeutige Werte zu speichern
+        const uniqueData = new Set(data);
+
+        uniqueData.forEach((item, index) => {
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('autocomplete-item');
+            itemElement.textContent = item;
+            itemElement.addEventListener('click', function () {
+                bezeichnungInput.value = item;
+                closeAutocompleteDropdown();
+            });
+            itemElement.addEventListener('mouseenter', function () {
+                selectedIndex = index;
+                highlightSelectedItem();
+            });
+            dropdownContainer.appendChild(itemElement);
+        });
+
+        document.body.appendChild(dropdownContainer);
+
+        // Füge die CSS-Regel für den Cursor hinzu
+        const autocompleteItems = document.querySelectorAll('.autocomplete-item');
+        autocompleteItems.forEach(item => {
+            item.style.cursor = 'pointer';
+        });
+
+        // Füge Event Listener für Pfeiltasten und Enter hinzu
+        document.addEventListener('keydown', handleKeyDown);
+    };
+
+    // Schließe das Dropdown-Menü der Autocomplete-Funktion.
+    const closeAutocompleteDropdown = () => {
+        const dropdown = document.querySelector('.autocomplete-dropdown');
+        if (dropdown) {
+            dropdown.remove();
+            document.removeEventListener('keydown', handleKeyDown); // Entferne Event Listener beim Schließen
+        }
+    };
+
+    // Schließe das Dropdown-Menü beim Klicken außerhalb des Textfelds.
+    document.addEventListener('click', function (event) {
+        if (!event.target.classList.contains('autocomplete-item') && !event.target.matches('input[placeholder="Bezeichnung"]')) {
+            closeAutocompleteDropdown();
+        }
+    });
+
+    // Hervorhebung des aktuell anvisierten Elements
+    const highlightSelectedItem = () => {
+        const autocompleteItems = document.querySelectorAll('.autocomplete-item');
+        autocompleteItems.forEach((item, index) => {
+            if (index === selectedIndex) {
+                item.style.backgroundColor = '#f0f0f0'; // Hintergrundfarbe für Anvisierung
+            } else {
+                item.style.backgroundColor = ''; // Zurücksetzen der Hintergrundfarbe für andere Elemente
+            }
+        });
+    };
+
+    // Behandlung der Tastenereignisse
+const handleKeyDown = (event) => {
+    const autocompleteItems = document.querySelectorAll('.autocomplete-item');
+
+    if (event.key === 'ArrowUp' && selectedIndex > 0) {
+        selectedIndex--;
+    } else if (event.key === 'ArrowDown' && selectedIndex < autocompleteItems.length - 1) {
+        selectedIndex++;
+    } else if (event.key === 'Enter' && selectedIndex !== -1) {
+        const selectedItem = autocompleteItems[selectedIndex];
+        if (selectedItem) {
+            bezeichnungInput.value = selectedItem.textContent;
+            closeAutocompleteDropdown();
+            event.preventDefault(); // Verhindere das Standardverhalten der Enter-Taste
+        }
+    }
+
+    highlightSelectedItem();
+};
+
+});
+
+
+
+
+
+</script>
+</body>
+</html>
