@@ -17,16 +17,16 @@
 
     <!-- Skript für Auth0-Integration -->
     <script>
-        // Initialisierung von Auth0
-        const auth0 = new Auth0({
+        // Initialisierung von Auth0Client
+        const auth0 = new Auth0Client({
             domain: 'lebr2003.eu.auth0.com',
             clientId: 'SE5RkKe9X0QtqKleczkKG37w8elgJrOk',
             redirectUri: 'https://apotheke.leanderbrunar.net/Anmelden/callback',
         });
 
         // Funktion für Auth0-Login
-        function loginWithAuth0() {
-            auth0.loginWithRedirect();
+        async function loginWithAuth0() {
+            await auth0.loginWithRedirect();
         }
     </script>
 </body>
