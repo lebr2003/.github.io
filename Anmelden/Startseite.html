@@ -1,24 +1,31 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>SPA SDK Sample</title>
-    <link rel="stylesheet" type="text/css" href="/public/css/main.css" />
-  </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startseite</title>
 
-  <body>
-    <h2>SPA Authentication Sample</h2>
-    <p>Welcome to our page!</p>
-    <button id="btn-login" disabled="true" onclick="login()">Log in</button>
-    <button id="btn-logout" disabled="true" onclick="logout()">Log out</button>
+    <!-- Fügen Sie den Auth0 JavaScript-Tag hinzu -->
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+</head>
+<body>
+    <!-- HTML-Inhalt Ihrer Startseite -->
+    <h1>Willkommen auf der Startseite!</h1>
+    
+    <!-- Login-Button -->
+    <button onclick="loginWithAuth0()">Login mit Auth0</button>
 
+    <!-- Skript für Auth0-Integration -->
+    <script>
+        const auth0 = new Auth0({
+            domain: 'Ihre Auth0-Domain',
+            clientId: 'Ihre Client ID',
+            redirectUri: 'https://apotheke.leanderbrunar.net/Anmelden/callback',
+        });
 
-  
-  <!-- other HTML -->
-  
-  <!-- add the lines below existing code -->
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
-  <script src="/public/js/app.js"></script>
-
-  </body>
+        function loginWithAuth0() {
+            auth0.loginWithRedirect();
+        }
+    </script>
+</body>
 </html>
