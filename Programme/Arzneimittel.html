@@ -610,11 +610,13 @@ function refreshTable() {
         const z = parseInt(cells[2].textContent.split('/')[1], 10);
         const firstNumber = parseInt(cells[2].textContent.split('/')[0], 10);
 
-        if (z <= x && firstNumber <= y) {
-            row.style.backgroundColor = 'red';
-        } else {
-            row.style.backgroundColor = 'white';
-        }
+     if ((z <= x && firstNumber <= y) || z < x) {
+         row.style.backgroundColor = 'red';
+      } else {
+         row.style.backgroundColor = 'white';
+      }
+
+
     }
     showUnsavedWarning();
 // Rufe die Funktion sortTableByzero() am Ende von refreshTable() auf
