@@ -5,61 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foto Download</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <!-- Lade die dcraw-Bibliothek -->
-    <script src="https://cdn.jsdelivr.net/npm/dcraw@0.0.10/dist/dcraw.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/1.0.0/piexif.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rawdevjs/0.5.0/rawdev.min.js"></script>
 </head>
 <body>
 
     <h1>Foto Download</h1>
 
     <!-- Verlinke hier deine Fotos und XMP-Dateien auf GitHub -->
-    <button onclick="downloadPhoto()">Download Foto</button>
+    <button onclick="convertAndDownload()">Download Foto</button>
 
     <script>
-        // Warte, bis die Seite vollständig geladen ist
-        $(document).ready(function () {
-            function downloadPhoto() {
-                // Hier den Pfad zu deiner RAW-Datei und XMP-Datei einfügen
-                const rawFilePath = 'https://cors-anywhere.herokuapp.com/https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.RW2';
-                const xmpFilePath = 'https://cors-anywhere.herokuapp.com/https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.xmp';
+        async function convertAndDownload() {
+            // Hier den Pfad zu deiner RAW-Datei und XMP-Datei einfügen
+            const rawFilePath = 'https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.RW2';
+            const xmpFilePath = 'https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.xmp';
 
-                // Extrahiere den Dateinamen aus der RAW-URL
-                const rawFileName = rawFilePath.split('/').pop();
-                
-                // RAW-Datei herunterladen
-                $.get(rawFilePath, function (rawData) {
-                    // XMP-Datei herunterladen
-                    $.get(xmpFilePath, function (xmpData) {
-                        // Konvertiere RAW zu JPG
-                        const jpgData = dcraw({ data: rawData, settings: '-c -e' });
+            // Lade die RAW-Datei und XMP-Datei
+            const rawResponse = await fetch(rawFilePath);
+            const rawArrayBuffer = await rawResponse.arrayBuffer();
 
-                        // Füge Metadaten aus XMP ein
-                        const xmpJson = piexif.load(xmpData);
-                        const exifObj = { 'Exif': xmpJson['Exif'] || {}, '0th': xmpJson['0th'] || {} };
-                        const jpgWithMetadata = piexif.insert(piexif.dump(exifObj), jpgData);
+            const xmpResponse = await fetch(xmpFilePath);
+            const xmpText = await xmpResponse.text();
 
-                        // Erstelle Blob und erstelle Download-Link
-                        const blob = new Blob([jpgWithMetadata], { type: 'image/jpeg' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        
-                        // Setze den Download-Link mit dynamischem Dateinamen
-                        a.href = url;
-                        a.download = rawFileName.replace(".RW2", ".jpg");
-                        
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    });
-                });
-            }
+            // Konvertiere RAW zu JPG mit RawDevjs
+            const rawDev = new RawDev();
+            const imageData = rawDev.decode(rawArrayBuffer);
+            const jpgDataUrl = rawDev.toDataUrl(imageData, 'image/jpeg');
 
-            // Füge die Funktion downloadPhoto dem globalen Scope hinzu
-            window.downloadPhoto = downloadPhoto;
-        });
+            // Füge XMP-Metadaten hinzu
+            const blob = await fetch(jpgDataUrl).then(response => response.blob());
+            const jpgWithMetadata = new File([blob], 'ConvertedPhoto.jpg', {
+                type: 'image/jpeg',
+            });
+
+            // Erstelle einen Download-Link
+            const url = URL.createObjectURL(jpgWithMetadata);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = jpgWithMetadata.name;
+
+            // Füge den Link zum Dokument hinzu und simuliere einen Klick
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
     </script>
 
 </body>
 </html>
+
