@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foto Download</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dcraw/0.9.1/dcraw.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/1.0.0/piexif.js"></script>
+</head>
+<body>
+
+    <h1>Foto Download</h1>
+
+    <!-- Verlinke hier deine Fotos und XMP-Dateien auf GitHub -->
+    <button onclick="downloadPhoto()">Download Foto</button>
+
+    <script>
+        function downloadPhoto() {
+            // Hier den Pfad zu deiner RAW-Datei und XMP-Datei einfügen
+            const rawFilePath = 'https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.RW2';
+            const xmpFilePath = 'https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.xmp';
+        
+          // Extrahiere den Dateinamen aus der RAW-URL
+    const rawFileName = rawFilePath.split('/').pop();
+    
+    // RAW-Datei herunterladen
+    $.get(rawFilePath, function (rawData) {
+        // XMP-Datei herunterladen
+        $.get(xmpFilePath, function (xmpData) {
+            // Konvertiere RAW zu JPG
+            const jpgData = dcraw({ data: rawData, settings: '-c -e' });
+
+            // Füge Metadaten aus XMP ein
+            const xmpJson = piexif.load(xmpData);
+            const exifObj = { 'Exif': xmpJson['Exif'] || {}, '0th': xmpJson['0th'] || {} };
+            const jpgWithMetadata = piexif.insert(piexif.dump(exifObj), jpgData);
+
+            // Erstelle Blob und erstelle Download-Link
+            const blob = new Blob([jpgWithMetadata], { type: 'image/jpeg' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            // Setze den Download-Link mit dynamischem Dateinamen
+            a.href = url;
+            a.download = rawFileName.replace(".RW2", ".jpg");
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    });
+}
+
+    </script>
+
+</body>
+</html>
