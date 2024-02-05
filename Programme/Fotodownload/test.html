@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foto Download</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <!-- Lade die dcraw-Bibliothek -->
-    <script src="https://raw.githubusercontent.com/cyberang3l/dcraw.js/master/dcraw.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dcraw/0.9.1/dcraw.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/1.0.0/piexif.js"></script>
 </head>
 <body>
@@ -19,8 +18,8 @@
     <script>
         function downloadPhoto() {
             // Hier den Pfad zu deiner RAW-Datei und XMP-Datei einfügen
-            const rawFilePath = 'https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.RW2';
-            const xmpFilePath = 'https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.xmp';
+            const rawFilePath = 'https://cors-anywhere.herokuapp.com/https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.RW2';
+            const xmpFilePath = 'https://cors-anywhere.herokuapp.com/https://apotheke.leanderbrunar.net/Programme/Fotodownload/P1310062-2.xmp';
 
             // Extrahiere den Dateinamen aus der RAW-URL
             const rawFileName = rawFilePath.split('/').pop();
