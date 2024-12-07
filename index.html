@@ -115,22 +115,27 @@
             window.location.href = 'login.html';
         } else {
             // Token Überprüfung
-            checkTokenValidity(accessToken)
-                .then(isValid => {
-                    if (!isValid) {
-                        // Wenn der Token ungültig ist, Weiterleitung zum Login
+                checkTokenValidity(accessToken)
+                    .then(isValid => {
+                        if (!isValid) {
+                            // Wenn der Token ungültig ist, Weiterleitung zum Login
+                            window.location.href = 'login.html';
+                        } else {
+                            // Token ist gültig, normaler Inhalt der Seite laden
+                            console.log("Token gültig: " + accessToken);
+
+                            // Überprüfen, ob es ein mobiles Gerät ist und weiterleiten
+                            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                                window.location.href = 'mobile.html';  // Weiterleitung zur mobilen Seite
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        // Bei Fehlern die Weiterleitung zum Login durchführen
                         window.location.href = 'login.html';
-                    } else {
-                        // Token ist gültig, normaler Inhalt der Seite laden
-                        console.log("Token gültig: " + accessToken);
-                    }
-                })
-                .catch(error => {
-                    // Bei Fehlern die Weiterleitung zum Login durchführen
-                    window.location.href = 'login.html';
-                });
-        }
-    };
+                    });
+            }
+        };
 </script>
 
 
