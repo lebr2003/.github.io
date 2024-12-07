@@ -25,13 +25,16 @@
         }
         header img {
             position: absolute;
-            top: 139%;
+            top: 50%;
             right: 20px;
             transform: translateY(-50%);
+            width: 80px;
+	    height: auto;
         }
         .container {
             max-width: 960px;
             margin: 0 auto;
+	    margin-left: 40px;
         }
         .group {
             margin-bottom: 20px;
@@ -106,8 +109,8 @@
 <script>
     window.onload = function () {
         // Überprüfen, ob die Seite auf einem mobilen Gerät geöffnet wird
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            window.location.href = 'mobile_login.html';
+        if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            window.location.href = 'login.html';
         }
 
         // Access Token aus URL holen und verarbeiten
