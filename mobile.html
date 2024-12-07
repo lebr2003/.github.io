@@ -123,12 +123,12 @@ if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navig
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     const accessToken = urlParams.get('access_token');
     
-    // Falls der Access Token vorhanden ist, zur mobilen Seite weiterleiten
+    // Falls der Access Token vorhanden ist, zur normalen Seite weiterleiten
     if (accessToken) {
         // Den Access Token zu mobile.html weiterleiten
         window.location.href = `index.html#access_token=${accessToken}`;
     } else {
-        // Weiterleitung zur mobilen Seite ohne Token, falls keiner vorhanden ist
+        // Weiterleitung zur normalen Seite ohne Token, falls keiner vorhanden ist
         window.location.href = 'index.html';
     }
 }
