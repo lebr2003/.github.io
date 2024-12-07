@@ -93,14 +93,14 @@
 
             if (!accessToken) {
                 // Falls kein Access Token vorhanden ist, Weiterleitung zum Login
-                window.location.href = "https://apotheke.leanderbrunar.net/login";
+                window.location.href = 'login.html';
             } else {
                 // Token Überprüfung
                 checkTokenValidity(accessToken)
                     .then(isValid => {
                         if (!isValid) {
                             // Wenn der Token ungültig ist, Weiterleitung zum Login
-                            window.location.href = "https://apotheke.leanderbrunar.net/login";
+                            window.location.href = 'login.html';
                         } else {
                             // Falls der Access Token gültig ist, den normalen Inhalt der Seite laden
                             console.log("Token gültig: " + accessToken);  // Optional, falls du den Token anzeigen möchtest
@@ -108,7 +108,7 @@
                     })
                     .catch(error => {
                         // Bei Fehlern die Weiterleitung zum Login durchführen
-                        window.location.href = "https://apotheke.leanderbrunar.net/login";
+                        window.location.href = 'login.html';
                     });
             }
         };

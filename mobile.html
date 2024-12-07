@@ -90,28 +90,29 @@
             });
         }
 
-        // Hauptlogik zur Überprüfung des Tokens und Weiterleitung, falls nötig
+        // Funktion, die die gesamte Logik übernimmt
         window.onload = function() {
             const accessToken = getAccessToken();
 
             if (!accessToken) {
                 // Falls kein Access Token vorhanden ist, Weiterleitung zum Login
-                window.location.href = "https://apotheke.leanderbrunar.net/login";
+                window.location.href = 'mobile_login.html';
             } else {
                 // Token Überprüfung
                 checkTokenValidity(accessToken)
                     .then(isValid => {
                         if (!isValid) {
                             // Wenn der Token ungültig ist, Weiterleitung zum Login
-                            window.location.href = "https://apotheke.leanderbrunar.net/login";
+                            window.location.href = 'mobile_login.html';
                         } else {
-                            // Falls der Access Token gültig ist, den normalen Inhalt der Seite laden
+                            // Falls der Access Token gültig ist, den Inhalt der mobilen Seite anzeigen
                             console.log("Token gültig: " + accessToken);  // Optional, falls du den Token anzeigen möchtest
+                            // Hier kannst du auch den Inhalt der mobilen Seite laden
                         }
                     })
                     .catch(error => {
-                        // Bei Fehlern die Weiterleitung zum Login durchführen
-                        window.location.href = "https://apotheke.leanderbrunar.net/login";
+                        // Fehler bei der Token-Überprüfung, Weiterleitung zum Login
+                        window.location.href = 'mobile_login.html';
                     });
             }
         };
