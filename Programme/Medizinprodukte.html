@@ -10,27 +10,6 @@
     
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
-    <script>
-        var isPageVisible = true;
-
-        function handleVisibilityChange() {
-            if (document.hidden) {
-                isPageVisible = false;
-            } else {
-                isPageVisible = true;
-            }
-        }
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        window.addEventListener('beforeunload', function (e) {
-            if (isPageVisible) {
-                var confirmationMessage = "Durch das Neuladen der Seite gehen alle nicht gespeicherten Änderungen verloren.";
-                e.returnValue = confirmationMessage;
-                return confirmationMessage;
-            }
-        });
-    </script>
 
     
     <style>

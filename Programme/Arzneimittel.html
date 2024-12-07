@@ -10,21 +10,6 @@
     
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
-    <script>
-        var isPageVisible = true;
-
-        function handleVisibilityChange() {
-            if (document.hidden) {
-                isPageVisible = false;
-            } else {
-                isPageVisible = true;
-            }
-        }
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    </script>
-
 
 
     <style>
@@ -1535,25 +1520,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-   function saveFile() {
-        // Deine Logik zum Speichern der Datei
-        console.log("Datei wird gespeichert...");
-    }
+var isProcessing = false;
 
-
-
-    window.addEventListener('beforeunload', function (e) {
-        if (isPageVisible) {
-            // Zuerst die Funktion saveFile ausführen
-            saveFile();
-
-            // Danach den Prozess fortsetzen
-            // Keine Bestätigungsnachricht mehr anzeigen
-            e.preventDefault(); // Standardaktion verhindern
-            // Moderne Browser akzeptieren e.returnValue als Hinweis, aber keine explizite Nachricht mehr
-            e.returnValue = ''; // Leeres returnValue verhindern die Standardnachricht
-        }
+function saveFile() {
+    return new Promise((resolve) => {
+        isProcessing = true; // Prozess läuft
+        console.log("Speicherung läuft...");
+        setTimeout(() => {
+            console.log("Speicherung abgeschlossen.");
+            isProcessing = false; // Prozess abgeschlossen
+            resolve();
+        }, 5000); // Beispiel: 5 Sekunden Wartezeit
     });
+}
+
+window.addEventListener('beforeunload', async function (e) {
+    if (isProcessing) {
+        // Benutzer warnen
+        e.returnValue = 'Bitte warten Sie, die Daten werden gespeichert.';
+        return 'Bitte warten Sie, die Daten werden gespeichert.';
+    } else {
+        // Speichervorgang ausführen, wenn nötig
+        await saveFile();
+        // Optional: Rückgabewert entfernen, wenn kein Dialog benötigt wird
+        e.returnValue = '';
+    }
+});
+
 
 
 </script>
