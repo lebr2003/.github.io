@@ -116,7 +116,9 @@
         // Überprüfen, ob die Seite auf einem mobilen Gerät geöffnet wird
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         // Den Access Token aus der URL extrahieren (über Hash)
-        const accessToken = window.location.hash.substring(1).split('&').find(param => param.startsWith('access_token')).split('=')[1];
+        const hash = window.location.hash.substring(1);
+        const urlParams = new URLSearchParams(hash);
+        const accessToken = urlParams.get('access_token');
 
         // Falls der Access Token vorhanden ist, zur mobilen Seite weiterleiten
         if (accessToken) {
