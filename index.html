@@ -54,6 +54,67 @@
             text-decoration: none;
         }
     </style>
+
+    <script>
+        // Funktion, um den Access Token aus der URL zu extrahieren
+        function getAccessToken() {
+            const hash = window.location.hash.substring(1); // Entferne das '#' von der URL
+            const params = new URLSearchParams(hash);
+            return params.get("access_token");
+        }
+
+        // Funktion, um zu überprüfen, ob der Token gültig ist, indem ein API-Aufruf zu Dropbox gemacht wird
+        function checkTokenValidity(token) {
+            return new Promise((resolve, reject) => {
+                const url = 'https://api.dropboxapi.com/2/users/get_current_account';
+                const headers = new Headers();
+                headers.append('Authorization', 'Bearer ' + token);
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                })
+                .then(response => {
+                    if (response.ok) {
+                        resolve(true);  // Der Token ist gültig
+                    } else {
+                        resolve(false); // Der Token ist ungültig
+                    }
+                })
+                .catch(error => {
+                    reject(false); // Fehler beim Abrufen der Account-Informationen, Token ungültig
+                });
+            });
+        }
+
+        // Hauptlogik zur Überprüfung des Tokens und Weiterleitung, falls nötig
+        window.onload = function() {
+            const accessToken = getAccessToken();
+
+            if (!accessToken) {
+                // Falls kein Access Token vorhanden ist, Weiterleitung zum Login
+                window.location.href = "https://apotheke.leanderbrunar.net/login";
+            } else {
+                // Token Überprüfung
+                checkTokenValidity(accessToken)
+                    .then(isValid => {
+                        if (!isValid) {
+                            // Wenn der Token ungültig ist, Weiterleitung zum Login
+                            window.location.href = "https://apotheke.leanderbrunar.net/login";
+                        } else {
+                            // Falls der Access Token gültig ist, den normalen Inhalt der Seite laden
+                            console.log("Token gültig: " + accessToken);  // Optional, falls du den Token anzeigen möchtest
+                        }
+                    })
+                    .catch(error => {
+                        // Bei Fehlern die Weiterleitung zum Login durchführen
+                        window.location.href = "https://apotheke.leanderbrunar.net/login";
+                    });
+            }
+        };
+    </script>
+
+
 </head>
 <body>
     <header>
