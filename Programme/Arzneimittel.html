@@ -475,24 +475,8 @@ button.disabled-button {
 
     <script>
 
-    function saveFile() {
-        // Deine Logik zum Speichern der Datei
-        console.log("Datei wird gespeichert...");
-    }
 
 
-    window.addEventListener('beforeunload', function (e) {
-        if (isPageVisible) {
-            // Zuerst die Funktion saveFile ausführen
-            saveFile();
-
-            // Danach den Prozess fortsetzen
-            // Keine Bestätigungsnachricht mehr anzeigen
-            e.preventDefault(); // Standardaktion verhindern
-            // Moderne Browser akzeptieren e.returnValue als Hinweis, aber keine explizite Nachricht mehr
-            e.returnValue = ''; // Leeres returnValue verhindern die Standardnachricht
-        }
-    });
 
 
 function importTextFile() {
@@ -1548,7 +1532,18 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 });
 
+    window.addEventListener('beforeunload', function (e) {
+        if (isPageVisible) {
+            // Zuerst die Funktion exportTextFile ausführen
+            exportTextFile();
 
+            // Danach den Prozess fortsetzen
+            // Keine Bestätigungsnachricht mehr anzeigen
+            e.preventDefault(); // Standardaktion verhindern
+            // Moderne Browser akzeptieren e.returnValue als Hinweis, aber keine explizite Nachricht mehr
+            e.returnValue = ''; // Leeres returnValue verhindern die Standardnachricht
+        }
+    });
 
 
 </script>
