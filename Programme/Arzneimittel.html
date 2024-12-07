@@ -1532,10 +1532,20 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 });
 
+
+
+
+   function saveFile() {
+        // Deine Logik zum Speichern der Datei
+        console.log("Datei wird gespeichert...");
+    }
+
+
+
     window.addEventListener('beforeunload', function (e) {
         if (isPageVisible) {
-            // Zuerst die Funktion exportTextFile ausführen
-            exportTextFile();
+            // Zuerst die Funktion saveFile ausführen
+            saveFile();
 
             // Danach den Prozess fortsetzen
             // Keine Bestätigungsnachricht mehr anzeigen
