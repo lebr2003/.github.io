@@ -155,12 +155,15 @@
         </div>
     </div>
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         // Überprüfen, ob die Seite auf einem mobilen Gerät geöffnet wird
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             window.location.href = 'mobile.html';  // Weiterleitung zur mobilen Seite
         }
-    </script>
+    });
+</script>
+
 
 
 </body>
