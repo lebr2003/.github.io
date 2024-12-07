@@ -55,87 +55,84 @@
         }
     </style>
 
-    <script>
-        // Funktion, um den Access Token aus der URL zu extrahieren
-        function getAccessToken() {
-            const hash = window.location.hash.substring(1); // Entferne das '#' von der URL
-            const params = new URLSearchParams(hash);
-            return params.get("access_token");
+<script>
+    // Funktion, um den Access Token aus der URL zu extrahieren
+    function getAccessToken() {
+        const hash = window.location.hash.substring(1); // Entferne das '#' von der URL
+        const params = new URLSearchParams(hash);
+        return params.get("access_token");
+    }
+
+    // Funktion, um den Access Token im LocalStorage zu speichern
+    function saveAccessTokenToLocalStorage(token) {
+        localStorage.setItem("access_token", token);
+    }
+
+    // Funktion, um den Access Token aus dem LocalStorage zu holen
+    function getAccessTokenFromLocalStorage() {
+        return localStorage.getItem("access_token");
+    }
+
+    // Funktion, um zu überprüfen, ob der Token gültig ist, indem ein API-Aufruf zu Dropbox gemacht wird
+    function checkTokenValidity(token) {
+        return new Promise((resolve, reject) => {
+            const url = 'https://api.dropboxapi.com/2/users/get_current_account';
+            const headers = new Headers();
+            headers.append('Authorization', 'Bearer ' + token);
+
+            fetch(url, {
+                method: 'POST',
+                headers: headers,
+            })
+            .then(response => {
+                if (response.ok) {
+                    resolve(true);  // Der Token ist gültig
+                } else {
+                    resolve(false); // Der Token ist ungültig
+                }
+            })
+            .catch(error => {
+                reject(false); // Fehler beim Abrufen der Account-Informationen, Token ungültig
+            });
+        });
+    }
+
+    // Hauptlogik zur Überprüfung des Tokens und Weiterleitung
+    window.onload = function() {
+        const accessTokenFromUrl = getAccessToken();  // Den Access Token aus der URL holen
+
+        if (accessTokenFromUrl) {
+            // Speichern des Tokens im LocalStorage
+            saveAccessTokenToLocalStorage(accessTokenFromUrl);
+            // Umleitung ohne Token in der URL (um die URL sauber zu halten)
+            window.location.hash = '';
         }
 
-        // Funktion, um den Access Token im LocalStorage zu speichern
-        function saveAccessTokenToLocalStorage(token) {
-            localStorage.setItem("access_token", token);
-        }
+        const accessToken = getAccessTokenFromLocalStorage();  // Den Access Token aus dem LocalStorage holen
 
-        // Funktion, um den Access Token aus dem LocalStorage zu holen
-        function getAccessTokenFromLocalStorage() {
-            return localStorage.getItem("access_token");
-        }
-
-        // Überprüfen, ob ein Access Token in der URL vorhanden ist und speichern
-        window.onload = function() {
-            const accessToken = getAccessTokenFromUrl();
-
-            if (accessToken) {
-                // Speichern des Tokens im LocalStorage
-                saveAccessTokenToLocalStorage(accessToken);
-                // Umleitung ohne Token in der URL (um die URL sauber zu halten)
-                window.location.hash = '';
-            }
-        };
-
-        // Funktion, um zu überprüfen, ob der Token gültig ist, indem ein API-Aufruf zu Dropbox gemacht wird
-        function checkTokenValidity(token) {
-            return new Promise((resolve, reject) => {
-                const url = 'https://api.dropboxapi.com/2/users/get_current_account';
-                const headers = new Headers();
-                headers.append('Authorization', 'Bearer ' + token);
-
-                fetch(url, {
-                    method: 'POST',
-                    headers: headers,
-                })
-                .then(response => {
-                    if (response.ok) {
-                        resolve(true);  // Der Token ist gültig
+        if (!accessToken) {
+            // Falls kein Access Token vorhanden ist, Weiterleitung zum Login
+            window.location.href = 'login.html';
+        } else {
+            // Token Überprüfung
+            checkTokenValidity(accessToken)
+                .then(isValid => {
+                    if (!isValid) {
+                        // Wenn der Token ungültig ist, Weiterleitung zum Login
+                        window.location.href = 'login.html';
                     } else {
-                        resolve(false); // Der Token ist ungültig
+                        // Token ist gültig, normaler Inhalt der Seite laden
+                        console.log("Token gültig: " + accessToken);
                     }
                 })
                 .catch(error => {
-                    reject(false); // Fehler beim Abrufen der Account-Informationen, Token ungültig
+                    // Bei Fehlern die Weiterleitung zum Login durchführen
+                    window.location.href = 'login.html';
                 });
-            });
         }
+    };
+</script>
 
-        // Token Überprüfung und Weiterleitung falls ungültig
-        window.onload = function() {
-            const accessToken = getAccessTokenFromLocalStorage();
-
-            if (!accessToken) {
-                // Falls kein Access Token vorhanden ist, Weiterleitung zum Login
-                window.location.href = 'login.html';
-            } else {
-                // Token Überprüfung
-                checkTokenValidity(accessToken)
-                    .then(isValid => {
-                        if (!isValid) {
-                            // Wenn der Token ungültig ist, Weiterleitung zum Login
-                            window.location.href = 'login.html';
-                        } else {
-                            // Token ist gültig, normaler Inhalt der Seite laden
-                            console.log("Token gültig: " + accessToken);
-                        }
-                    })
-                    .catch(error => {
-                        // Bei Fehlern die Weiterleitung zum Login durchführen
-                        window.location.href = 'login.html';
-                    });
-            }
-        };
-
-    </script>
 
 
 </head>
