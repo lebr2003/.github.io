@@ -23,13 +23,6 @@
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
-        window.addEventListener('beforeunload', function (e) {
-            if (isPageVisible) {
-                var confirmationMessage = "Durch das Neuladen der Seite gehen alle nicht gespeicherten Änderungen verloren.";
-                e.returnValue = confirmationMessage;
-                return confirmationMessage;
-            }
-        });
     </script>
 
 
@@ -481,6 +474,26 @@ button.disabled-button {
 
 
     <script>
+
+    function saveFile() {
+        // Deine Logik zum Speichern der Datei
+        console.log("Datei wird gespeichert...");
+    }
+
+
+    window.addEventListener('beforeunload', function (e) {
+        if (isPageVisible) {
+            // Zuerst die Funktion saveFile ausführen
+            saveFile();
+
+            // Danach den Prozess fortsetzen
+            // Keine Bestätigungsnachricht mehr anzeigen
+            e.preventDefault(); // Standardaktion verhindern
+            // Moderne Browser akzeptieren e.returnValue als Hinweis, aber keine explizite Nachricht mehr
+            e.returnValue = ''; // Leeres returnValue verhindern die Standardnachricht
+        }
+    });
+
 
 function importTextFile() {
     const fileInput = document.getElementById('fileInput');
