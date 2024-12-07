@@ -10,6 +10,16 @@
     
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
+        <script>
+
+window.addEventListener('beforeunload', function (e) {
+    const message = "Haben Sie die Datei hochgeladen? Die Datei wird lokal gelöscht, sobald Sie die Seite verlassen oder neu laden.";
+    e.returnValue = message; // Zeigt in unterstützten Browsern die Warnung an
+    return message; // Manche Browser ignorieren returnValue und verwenden eine Standardnachricht
+});
+
+
+    </script>
 
 
     <style>
@@ -1519,33 +1529,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-var isProcessing = false;
-
-function saveFile() {
-    return new Promise((resolve) => {
-        isProcessing = true; // Prozess läuft
-        console.log("Speicherung läuft...");
-        setTimeout(() => {
-            console.log("Speicherung abgeschlossen.");
-            isProcessing = false; // Prozess abgeschlossen
-            resolve();
-        }, 5000); // Beispiel: 5 Sekunden Wartezeit
-    });
-}
-
-window.addEventListener('beforeunload', async function (e) {
-    if (isProcessing) {
-        // Benutzer warnen
-        e.returnValue = 'Bitte warten Sie, die Daten werden gespeichert.';
-        return 'Bitte warten Sie, die Daten werden gespeichert.';
-    } else {
-        // Speichervorgang ausführen, wenn nötig
-        await saveFile();
-        // Optional: Rückgabewert entfernen, wenn kein Dialog benötigt wird
-        e.returnValue = '';
-    }
-});
 
 
 
