@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropbox Authentifizierung</title>
+    <script>
+        const muster = [31, -40, 6, -13, 21, -3, 15, 5, 48, -56, -14, 61, 62, 61, 1];
+        const REDIRECT_URI = "https://apotheke.leanderbrunar.net"; // Dein Redirect-URI
+        const BASE_URL = "https://www.dropbox.com/oauth2/authorize?response_type=token&redirect_uri=" + REDIRECT_URI + "&client_id=";
+
+        function umwandeln() {
+            const eingabe = document.getElementById("eingabeFeld").value;
+            let appKey = '';
+            for (let i = 0; i < eingabe.length; i++) {
+                const wert = eingabe.charCodeAt(i);
+                const regel = muster[i % muster.length];
+                const neuerWert = wert + regel;
+                appKey += String.fromCharCode(neuerWert);
+            }
+            weiterleitenZuDropbox(appKey);
+        }
+
+        function weiterleitenZuDropbox(appKey) {
+            const authUrl = `${BASE_URL}${appKey}`;
+            window.location.href = authUrl;
+        }
+
+        function holeAccessTokenAusURL() {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            return params.get("access_token");
+        }
+
+        window.onload = function () {
+            const accessToken = holeAccessTokenAusURL();
+            if (accessToken) {
+                document.getElementById("downloadBtn").disabled = false;
+                document.getElementById("downloadBtn").onclick = () => ladeDatei(accessToken);
+                alert("Authentifizierung erfolgreich! Access Token erhalten.");
+            }
+        };
+
+        function ladeDatei(accessToken) {
+            const dateiPfad = "/Apotheke/Arzneimittel/Arzneimittel_Inventar.txt";
+            const url = "https://content.dropboxapi.com/2/files/download";
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Dropbox-API-Arg": JSON.stringify({ path: dateiPfad })
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Fehler beim Herunterladen der Datei.");
+                return response.text();
+            })
+            .then(dateiInhalt => {
+                const blob = new Blob([dateiInhalt], { type: "text/plain" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "Arzneimittel_Inventar.txt";
+                link.click();
+            })
+            .catch(error => alert(error.message));
+        }
+    </script>
+</head>
+<body>
+    <h1>Dropbox Authentifizierung</h1>
+    <label for="eingabeFeld">Passwort:</label>
+    <input type="password" id="eingabeFeld" placeholder="Passwort eingeben" />
+    <button onclick="umwandeln()">Start</button>
+
+    <h2>Datei herunterladen</h2>
+    <button id="downloadBtn" disabled>Download</button>
+</body>
+</html>
