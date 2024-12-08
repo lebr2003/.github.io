@@ -340,51 +340,8 @@ button.disabled-button {
 <div id="readmePopup" class="popup">
     <div class="popup-content">
         <span class="close" onclick="closeReadmePopup()">&times;</span>
-        <h2>READ ME</h2>
-
-        <p><strong>Datei auswählen und importieren:</strong> Datei befindet sich im geteilten Ordner im Unterverzeichnis <em> Inventar_Arzneimittel</em>. Bitte die neueste Datei auswählen.</p>
-
-        <p><strong>Refresh:</strong> Mit Refresh werden alle Einträge, die denselben Barcode und dasselbe Ablaufdatum haben, zusammengeführt. Die Menge wird addiert. Die Einträge werden nach Ablaufdatum sortiert. Zusätzlich werden alle Einträge, die bereits abgelaufen sind oder im nächsten Monat ablaufen, rot markiert.</p>
-
-        <p><strong>Ordnen nach Wirkstoff:</strong> Die Einträge werden alphabetisch nach dem Wirkstoff geordnet. (Abgelaufene Einträge werden nur mit <strong>Refresh</strong> rot gefärbt.)</p>
-
-         <p><strong>Menge:</strong> Bei diesem Button wird ein neues Fenster angezeigt. Die Einträge der Tabelle werden nach dem Barcode zusammengefasst, dabei werden die Mengen addiert. Das Ablaufdatum wird hier ignoriert. Dadurch sieht man, wie viel von einem Produkt insgesamt da ist.</p>
-    <ul>
-            <li><strong>Datei auswählen:</strong> Bitte wähle die Excel-Datei <em>Inventar_Lagerort, min. Lagermenge</em> aus. Dort sind die Mindestlagermengen der Produkte eingetragen. (Das Programm wählt automatisch das Blatt 1 der Excel-Datei aus.)</li>
-            <li><strong>Vergleichen:</strong> Das Inventar wird mit der Mindestlagermenge verglichen. In Spalte 2 steht die derzeitige Menge, in Spalte 3 steht die Mindestlagermenge. Ist die Menge eines Produktes im Inventar kleiner oder gleich der Mindestlagermenge, wird die Zeile orange markiert. Produkte, die im Inventar aber nicht in der Excel-Datei stehen, werden auch orange markiert. Die 3. Spalte bleibt dabei leer.</li>
-            <li>untere Tabelle: Hier werden Produkte angezeigt und orange gefärbt, die sich im Inventar befinden sollten, aber nicht im Inventar vorhanden sind</li>
-            <li><strong>Schließen (x):</strong> Das Fenster mit der gerade angezeigten Vergleichstabelle wird geschlossen (und nicht gespeichert). Es wird nun wieder die Tabelle angezeigt, die vor dem Klick auf den Button <strong>Menge</strong> gezeigt wurde. </li>
-
-        </ul>
-
-
-
-        <p><strong>Exportieren:</strong> Tabelle wird als .txt exportiert und der Dateiname mit dem heutigen Datum und Uhrzeit versehen. Die Reihenfolge der Einträge in der .txt-Datei ist so wie in der aktuellen Tabelle. Datei bitte im geteilten Ordner im Unterverzeichnis <em> Inventar_Arzneimittel</em> speichern.</p>
-
-         <p><strong>On/Off-Schalter:</strong> Wenn der Schalter an ist (blau), kann jedes Tabellenfeld per Mausklick bearbeitet werden. Alle Buttons sind dabei deaktiviert. <span style="color: red;">Kein Tabellenfeld darf komplett leer sein!</span></p>
-
-        <p><strong>Texteingabefelder:</strong></p>
-        <ul>
-            <li>Barcode: Nach Eingabe des Barcodes und Klicken auf <strong>Suchen</strong> werden "Wirkstoff" und "Bezeichnung" automatisch in die Texteingabefelder hinzugefügt.</li>
-
-            <li>Wirkstoff: Nach Eingabe des Wirkstoffes und Klicken auf <strong>Suchen</strong> werden "Barcode" und "Bezeichnung" automatisch in die Texteingabefelder hinzugefügt. (Sollte bereits etwas in "Barcode" stehen, wird der Begriff in "Wirkstoff" bei der Suche ignoriert.)</li>
-
-            <li>Bezeichnung: Nach Eingabe der Bezeichnung und Klicken auf <strong>Suchen</strong> werden "Barcode" und "Wirkstoff" automatisch in die Texteingabefelder hinzugefügt. (Sollte bereits etwas in "Barcode" oder "Wirkstoff" stehen, wird der Begriff in "Bezeichnung" bei der Suche ignoriert.)</li>
-
-            <li>Menge: Die Menge des Eintrages muss hinzugefügt werden.</li>
-
-            <li>Ablaufdatum: Das Ablaufdatum des Eintrages muss hinzugefügt werden. (Im Format MM/YY)</li>
-        </ul>
-        <p><strong>Suchen:</strong> "Barcode", "Wirkstoff" oder "Bezeichnung" werden automatisch in die Texteingabefelder hinzugefügt, wenn eines dieser 3 Textfelder ausgefüllt ist und wenn der Eintrag bereits in der Tabelle vorhanden ist. Die Priorität der Suche ist Barcode, Wirkstoff, Bezeichnung. Sollte der Eintrag noch nicht in der Tabelle vorhanden sein, kommt die Meldung: Neues Produkt! In dem Fall müssen alle Texteingabefelder manuell ausgefüllt werden.</p>
-
-        <p><strong>Neuer Eintrag:</strong> Ein neuer Eintrag mit den Begriffen/Werten der Texteingabefelder wird in die Tabelle hinzugefügt. Der Button funktioniert nur dann, wenn alle Texteingabefelder ausgefüllt sind.</p>
-
-
-        <p><strong style="color: red; font-weight: bold;">Speicherung der Einträge:</strong> Die Tabelle, die angezeigt wird, ist nie in der Webanwendung gespeichert. Daher muss am Ende der Session die Tabelle über <strong>Exportieren</strong> gespeichert werden. Bei Neuladen oder Beenden der Seite sowie bei erneutem Importieren wird die Tabelle zurückgesetzt.</p>
-
-        <p><strong style="color: red; font-weight: bold;">Datensicherheit:</strong> Die Daten in der Tabelle sind nur lokal auf dem Gerät sichtbar und auch nur so lange, bis die Webanwendung aktualisiert wird bzw. beendet wird. Die Daten gelangen nicht ins Internet.</p>
-
-        <p><strong style="color: red; font-weight: bold;">Bei Fragen:</strong> Leander Brunar (leander@brunar.com)</p>
+        <h2>README</h2>
+        <div id="readmeContent">Lade Inhalt...</div>
     </div>
 </div>
 
@@ -1236,18 +1193,34 @@ function hideUnsavedWarning() {
 }
 
 
-// Funktion zum Öffnen des README-Popup
+// Funktion zum Öffnen des README-Popups und Laden der Inhalte
 function openReadmePopup() {
-    var popup = document.getElementById('readmePopup');
-    popup.style.display = 'block';
-event.preventDefault();
+    const popup = document.getElementById('readmePopup');
+    const contentDiv = document.getElementById('readmeContent');
+
+    // Inhalte der externen HTML-Datei laden
+    fetch('../readme.html')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Fehler beim Laden der README-Datei.');
+            }
+            return response.text();
+        })
+        .then(html => {
+            contentDiv.innerHTML = html;
+            popup.style.display = 'block'; // Popup sichtbar machen
+        })
+        .catch(error => {
+            contentDiv.innerHTML = `<p style="color: red;">Fehler: ${error.message}</p>`;
+        });
 }
 
-// Funktion zum Schließen des README-Popup
+// Funktion zum Schließen des README-Popups
 function closeReadmePopup() {
-    var popup = document.getElementById('readmePopup');
+    const popup = document.getElementById('readmePopup');
     popup.style.display = 'none';
 }
+
 
 
 
