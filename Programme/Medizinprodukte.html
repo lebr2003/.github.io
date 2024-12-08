@@ -313,10 +313,10 @@ button.disabled-button {
 <button type="button" onclick="importButton()" style="margin-right: 25px;">Importieren</button>
 <button type="button" onclick="refreshTable()">Refresh</button>
 <button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
-<button type="button" onclick="openReadmePopup()">README</button> 
+<button type="button" onclick="openReadmePopup()">README</button>
 <button type="button" type="button" class="blue-button" onclick="openComparisonTable()">Menge</button>
-<button class="green-button" onclick="exportTextFiletoCloud()">Speichern</button>
-<button type="button" onclick="exportTextFiletoExtern()">Extern Speichern</button>
+<button class="green-button" onclick="saveButton()">Speichern</button>
+<button type="button" onclick="exportButton()">Extern Speichern</button>
 <span id="unsavedWarning" class="unsaved-warning"><strong>Tabelle nicht gespeichert!</strong></span>
 <label class="switch">
   <input type="checkbox" id="editToggle">
@@ -647,6 +647,122 @@ function importButton() {
 }
 
 
+function exportTextFileToCloud() {
+    const accessToken = getAccessTokenFromLocalStorage();  // Den Access Token aus dem LocalStorage holen
+    const dropboxFilePath = '/Apotheke/Medizinprodukte/Medizinprodukte_Inventar.txt';
+
+    if (!accessToken) {
+        exportTextFiletoExtern();
+        const now = new Date();
+        const timestamp = now.toLocaleString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        }).replace(/[^0-9]/g, '_');
+        const fileName = `Medizinprodukte_${timestamp}.txt`;
+
+        const userConfirmed = confirm(
+            `Kein Access Token gefunden. \n` +
+            `Die Datei wurde in den Downloads gespeichert: ${fileName} \n\n` +
+            `Melden Sie sich an und importieren Sie anschließend die Datei über 'Importieren'`
+        );
+
+        if (userConfirmed) {
+            // Umleitung, wenn der Benutzer auf "OK" klickt
+            window.location.href = '../login.html';
+        }
+    } else {
+        // Token Überprüfung
+
+        checkTokenValidity(accessToken)
+            .then(isValid => {
+                if (!isValid) {
+                    // Token ungültig
+
+                    exportTextFiletoExtern();
+                    const now = new Date();
+                    const timestamp = now.toLocaleString('de-DE', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    }).replace(/[^0-9]/g, '_');
+                    const fileName = `Medizinprodukte_${timestamp}.txt`;
+
+                    const userConfirmed = confirm(
+                        `Der Access Token ist ungültig. \n` +
+                        `Die Datei wurde in den Downloads gespeichert: ${fileName} \n\n` +
+                        `Melden Sie sich erneut an und importieren Sie anschließend die Datei über 'Importieren'`
+                    );
+
+                    if (userConfirmed) {
+                        // Umleitung, wenn der Benutzer auf "OK" klickt
+                        window.location.href = '../login.html';
+                    }
+                } else {
+                    // Token gültig
+                    console.log("Token gültig: " + accessToken);
+
+                    const dataTable = document.getElementById('dataTable');
+                    const rows = dataTable.getElementsByTagName('tr');
+                    let content = '';
+
+                    for (const row of rows) {
+                        const cells = row.getElementsByTagName('td');
+                        const rowData = [];
+                        for (const cell of cells) {
+                            rowData.push(cell.textContent);
+                        }
+                        content += rowData.join('; ') + '\n';
+                    }
+
+                    // Erstellen eines Blob-Objekts für den Dateiinhalt
+                    const blob = new Blob([content], { type: 'text/plain' });
+
+                    // API-Aufruf, um die Datei auf Dropbox hochzuladen
+                    fetch('https://content.dropboxapi.com/2/files/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + accessToken,
+                            'Dropbox-API-Arg': JSON.stringify({
+                                path: dropboxFilePath,
+                                mode: 'overwrite',
+                                autorename: true,
+                                mute: false
+                            }),
+                            'Content-Type': 'application/octet-stream'
+                        },
+                        body: blob
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Fehler beim Hochladen der Datei.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                    alert("Datei erfolgreich hochgeladen!");
+                    })
+                    .catch(error => {
+                        console.error('Fehler beim Hochladen der Datei: ', error);
+                        alert('Fehler beim Hochladen der Datei. Bitte versuchen Sie es erneut.');
+                    });
+                }
+            })
+
+    }
+
+}
+
+
+
+
+
+
+
 function exportTextFiletoExtern() {
     const dataTable = document.getElementById('dataTable');
     const rows = dataTable.getElementsByTagName('tr');
@@ -685,6 +801,16 @@ function exportTextFiletoExtern() {
     a.click();
     document.body.removeChild(a);
 
+}
+
+
+function exportButton() {
+    exportTextFiletoExtern();
+event.preventDefault();
+}
+
+function saveButton() {
+    exportTextFileToCloud();
 event.preventDefault();
 }
 
