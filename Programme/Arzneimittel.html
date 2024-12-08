@@ -665,6 +665,29 @@ function importButton() {
 
 
 
+let timerId = null; // Speichert die ID des Timers
+
+// Startet den Timer
+function startExportTimer() {
+    stopExportTimer(); // Stellt sicher, dass kein alter Timer läuft
+    timerId = setInterval(() => {
+        exportTextFileToCloud(); // Führt die Export-Funktion aus
+    }, 60000); // 60000 ms = 1 Minute
+    console.log("Timer gestartet. Die Speicherung wird alle 60 Sekunden ausgeführt.");
+}
+
+// Stoppt den Timer
+function stopExportTimer() {
+    if (timerId !== null) {
+        clearInterval(timerId); // Beendet den aktuellen Timer
+        timerId = null; // Zurücksetzen der Timer-ID
+        console.log("Timer gestoppt. Es erfolgt keine automatische Speicherung.");
+    }
+}
+
+
+
+
 
 function exportTextFileToCloud() {
     const accessToken = getAccessTokenFromLocalStorage();  // Den Access Token aus dem LocalStorage holen
@@ -1263,10 +1286,15 @@ function toggleTableEditing() {
     if (editToggle.checked) {
         table.contentEditable = true;
         table.classList.add("editable"); // Füge eine CSS-Klasse für bearbeitbare Tabellen hinzu
+        stopExportTimer();
+        console.log("Die Tabelle kann bearbeitet werden.");
     } else {
         table.contentEditable = false;
         table.classList.remove("editable"); // Entferne die CSS-Klasse, um die Tabelle nicht bearbeitbar zu machen
         showUnsavedWarning();
+        console.log("Die Bearbeitung der Tabelle ist abgeschlossen.");
+        exportTextFileToCloud();
+        startExportTimer();
     }
 }
 
@@ -1816,6 +1844,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+window.onload = function() {
+    startExportTimer(); // Startet den Timer beim Laden der Seite
+};
 
 
 
