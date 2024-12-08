@@ -195,11 +195,13 @@ body {
         }
 
 .unsaved-warning {
+    white-space: nowrap; /* Verhindert Zeilenumbrüche */
     background-color: yellow; /* Hintergrundfarbe auf Gelb setzen */
     padding: 5px 10px; /* Raum um den Text herum hinzufügen */
     border-radius: 5px; /* Abrundung der Ecken */
     color: red; /* Textfarbe auf Schwarz setzen */
     display: none; /* Standardmäßig ausblenden */
+    margin-left: 30px; /* Abstand zum Switch */
 }
 
 /* README-Popup (standardmäßig ausgeblendet) */
@@ -245,10 +247,11 @@ body {
     cursor: text; /* Zeiger-Cursor für bearbeitbare Tabellen */
 }
 
-/* Stil für den kleineren Switch */
+/* Stil für den Switch */
 .switch {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center; /* Vertikal ausrichten */
   width: 40px; /* Breite des Switch-Containers */
   height: 20px; /* Höhe des Switch-Containers */
 }
@@ -319,15 +322,15 @@ button.disabled-button {
 <input type="file" id="fileInput" style="display: none;" />
 <button type="button" onclick="importButton()" style="margin-right: 25px;">Importieren</button>
 <button type="button" onclick="refreshTable()">Refresh</button>
-<button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
+<button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Wirkstoff</button>
 <button type="button" onclick="openReadmePopup()">README</button>
 <button type="button" type="button" class="blue-button" onclick="openComparisonTable()">Menge</button>
 <button class="green-button" onclick="saveButton()">Speichern</button>
 <button type="button" onclick="exportButton()">Extern Speichern</button>
-<span id="unsavedWarning" class="unsaved-warning"><strong>Tabelle nicht gespeichert!</strong></span>
 <label class="switch">
   <input type="checkbox" id="editToggle">
   <span class="slider round"></span>
+<span id="unsavedWarning" class="unsaved-warning"><strong>Tabelle nicht gespeichert!</strong></span>
 </label>
 
 
@@ -760,7 +763,8 @@ function exportTextFileToCloud() {
                         return response.json();
                     })
                     .then(data => {
-                    alert("Datei erfolgreich hochgeladen!");
+                    showAlert("Datei erfolgreich hochgeladen!");
+                    hideUnsavedWarning();
                     })
                     .catch(error => {
                         console.error('Fehler beim Hochladen der Datei: ', error);
@@ -1200,6 +1204,15 @@ function showUnsavedWarning() {
     }
 }
 
+// Diese Funktion entfernt die Warnung, indem sie das Element ausblendet.
+function hideUnsavedWarning() {
+    const unsavedWarning = document.getElementById('unsavedWarning');
+    if (unsavedWarning) {
+        unsavedWarning.style.display = 'none';
+    }
+}
+
+
 // Funktion zum Öffnen des README-Popup
 function openReadmePopup() {
     var popup = document.getElementById('readmePopup');
@@ -1253,6 +1266,7 @@ function toggleTableEditing() {
     } else {
         table.contentEditable = false;
         table.classList.remove("editable"); // Entferne die CSS-Klasse, um die Tabelle nicht bearbeitbar zu machen
+        showUnsavedWarning();
     }
 }
 
