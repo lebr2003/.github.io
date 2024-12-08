@@ -10,6 +10,16 @@
     
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
+        <script>
+
+window.addEventListener('beforeunload', function (e) {
+    const message = "Haben Sie die Datei hochgeladen? Die Datei wird lokal gelöscht, sobald Sie die Seite verlassen oder neu laden.";
+    e.returnValue = message; // Zeigt in unterstützten Browsern die Warnung an
+    return message; // Manche Browser ignorieren returnValue und verwenden eine Standardnachricht
+});
+
+
+    </script>
 
     
     <style>
@@ -299,13 +309,14 @@ button.disabled-button {
 
 <form id="form1">
 
-    <input type="file" id="fileInput" accept=".txt">
-    <button type="button" onclick="importTextFile()" style="margin-right: 25px;">Importieren</button>
+<input type="file" id="fileInput" style="display: none;" />
+<button type="button" onclick="importButton()" style="margin-right: 25px;">Importieren</button>
 <button type="button" onclick="refreshTable()">Refresh</button>
 <button type="button" onclick="sortTableByWirkstoff()" style="margin-right: 25px;">Ordnen nach Bezeichnung</button>
 <button type="button" onclick="openReadmePopup()">README</button> 
 <button type="button" type="button" class="blue-button" onclick="openComparisonTable()">Menge</button>
-<button class="green-button" onclick="exportTextFile()">Exportieren</button>
+<button class="green-button" onclick="exportTextFiletoCloud()">Speichern</button>
+<button type="button" onclick="exportTextFiletoExtern()">Extern Speichern</button>
 <span id="unsavedWarning" class="unsaved-warning"><strong>Tabelle nicht gespeichert!</strong></span>
 <label class="switch">
   <input type="checkbox" id="editToggle">
@@ -447,46 +458,196 @@ button.disabled-button {
 
     <script>
 
-function importTextFile() {
-    const fileInput = document.getElementById('fileInput');
-    const dataTable = document.getElementById('dataTable');
-    const file = fileInput.files[0];
+// Event-Listener für DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    importTextFileFromCloud();  // Diese Funktion wird aufgerufen, wenn der HTML-Inhalt geladen ist
+});
 
-    if (file) {
-        const reader = new FileReader();
 
-        reader.onload = function (e) {
-            const content = e.target.result;
-            const lines = content.trim().split('\n'); // Zeilen aufräumen und aufteilen
+// Funktion, um den Access Token aus dem LocalStorage zu holen
+function getAccessTokenFromLocalStorage() {
+    return localStorage.getItem("access_token");
+}
 
-            // Lösche den Inhalt der Tabelle
-            dataTable.innerHTML = '';
+// Funktion, um zu überprüfen, ob der Token gültig ist, indem ein API-Aufruf zu Dropbox gemacht wird
+function checkTokenValidity(token) {
+    return new Promise((resolve, reject) => {
+        const url = 'https://api.dropboxapi.com/2/users/get_current_account';
+        const headers = new Headers();
+        headers.append('Authorization', 'Bearer ' + token);
 
-            for (const line of lines) {
-                const data = line.split('; ');
-                const row = document.createElement('tr');
-
-                for (const item of data) {
-                    const cell = document.createElement('td');
-                    cell.textContent = item;
-                    row.appendChild(cell);
-                }
-
-                dataTable.appendChild(row);
+        fetch(url, {
+            method: 'POST',
+            headers: headers,
+        })
+        .then(response => {
+            if (response.ok) {
+                resolve(true);  // Der Token ist gültig
+            } else {
+                resolve(false); // Der Token ist ungültig
             }
-        };
+        })
+        .catch(error => {
+            reject(false); // Fehler beim Abrufen der Account-Informationen, Token ungültig
+        });
+    });
+}
 
-        reader.readAsText(file);
+// Funktion, um API zu überprüfen und die Datei von Dropbox herunterzuladen und die Tabelle zu erstellen
+function importTextFileFromCloud() {
+    const accessToken = getAccessTokenFromLocalStorage();  // Den Access Token aus dem LocalStorage holen
+    const dropboxFilePath = '/Apotheke/Medizinprodukte/Medizinprodukte_Inventar.txt';
+
+    if (!accessToken) {
+        const userConfirmed = confirm("Kein Access Token gefunden. Bitte melden Sie sich an.");
+        if (userConfirmed) {
+        // Umleitung, wenn der Benutzer auf "OK" klickt
+        window.location.href = '../login.html';
+        }
     } else {
-        showAlert("Bitte wählen Sie eine Textdatei aus.");
+        // Token Überprüfung
+        checkTokenValidity(accessToken)
+            .then(isValid => {
+                if (!isValid) {
+                    const userConfirmed = confirm("Der Access Token ist ungültig. Bitte melden Sie sich erneut an.");
+                    if (userConfirmed) {
+                    // Umleitung, wenn der Benutzer auf "OK" klickt
+                    window.location.href = '../login.html';
+                    }
+                } else {
+                    console.log("Token gültig: " + accessToken);
+
+                    // API-Aufruf, um die Datei von Dropbox herunterzuladen
+                    fetch('https://content.dropboxapi.com/2/files/download', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + accessToken,
+                            'Dropbox-API-Arg': JSON.stringify({
+                                path: dropboxFilePath
+                            })
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Fehler beim Herunterladen der Datei.');
+                        }
+                        return response.blob();  // Antwort als Blob zurückgeben
+                    })
+                    .then(blob => {
+                        // Erstelle ein File-Objekt aus dem Blob
+                        const fileInput = new File([blob], 'Medizinprodukte_Inventar.txt', { type: 'text/plain' });
+
+                        // Weiterverarbeitung der Datei
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const content = e.target.result;
+                            const lines = content.trim().split('\n'); // Zeilen aufräumen und aufteilen
+
+                            const dataTable = document.getElementById('dataTable');
+                            dataTable.innerHTML = ''; // Tabelle leeren
+
+                            // Erstelle die Tabelle mit den Daten aus der .txt Datei
+                            for (const line of lines) {
+                                const data = line.split('; ');
+                                const row = document.createElement('tr');
+
+                                for (const item of data) {
+                                    const cell = document.createElement('td');
+                                    cell.textContent = item;
+                                    row.appendChild(cell);
+                                }
+
+                                dataTable.appendChild(row);
+                            }
+                        };
+
+                        // Datei lesen
+                        reader.readAsText(fileInput);
+                        console.log("Daten erfolgreich von der Cloud importiert");
+                    })
+                    .catch(error => {
+                        console.error('Fehler beim Importieren der Datei: ', error);
+                        alert('Fehler beim Importieren der Datei. Bitte versuchen Sie es erneut.');
+                    });
+                }
+            })
+            .catch(error => {
+                alert("Fehler beim Überprüfen des Tokens. Bitte versuchen Sie es später.");
+            });
     }
-event.preventDefault();
 }
 
 
 
+function importTextFileExtern() {
+    // Holen Sie das Datei-Eingabefeld
+    const fileInput = document.getElementById('fileInput');
 
-function exportTextFile() {
+    // Öffnen Sie den Datei-Explorer, um eine Datei auszuwählen
+    fileInput.click();
+
+    // Event Listener, um die Datei nach Auswahl zu verarbeiten
+    fileInput.addEventListener('change', function() {
+        const file = fileInput.files[0];
+        const dataTable = document.getElementById('dataTable');
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const content = e.target.result;
+                const lines = content.trim().split('\n'); // Zeilen aufräumen und aufteilen
+
+                // Lösche den Inhalt der Tabelle
+                dataTable.innerHTML = '';
+
+                // Erstelle den Inhalt der Tabelle mit den Daten aus der Datei
+                for (const line of lines) {
+                    const data = line.split('; ');
+                    const row = document.createElement('tr');
+
+                    for (const item of data) {
+                        const cell = document.createElement('td');
+                        cell.textContent = item;
+                        row.appendChild(cell);
+                    }
+
+                    dataTable.appendChild(row);
+                }
+            };
+
+            reader.readAsText(file);
+            console.log("Daten erfolgreich Extern importiert");
+        } else {
+            showAlert("Bitte eine Textdatei auswählen.");
+        }
+    });
+
+    // Verhindern Sie das Standardverhalten des Formulars
+    event.preventDefault();
+}
+
+
+
+function importButton() {
+    // Bestätigungsnachricht anzeigen
+    const userConfirmed = confirm(
+        "ACHTUNG! Durch das Importieren einer externen .txt Datei wird das Inventar von der Cloud überschrieben. \n" +
+        "Über den Versionsverlauf ist die Wiederherstellung möglich. (Account benötigt die Freigabe). \n\n" +
+        "Wollen Sie fortfahren?"
+    );
+
+    if (userConfirmed) {
+        // Wenn der Benutzer bestätigt hat, importTextFileExtern ausführen
+        importTextFileExtern();
+    } else {
+        // Wenn der Benutzer abgebrochen hat, nichts tun
+        console.log("externer Import abgebrochen.");
+    }
+}
+
+
+function exportTextFiletoExtern() {
     const dataTable = document.getElementById('dataTable');
     const rows = dataTable.getElementsByTagName('tr');
     let content = '';
