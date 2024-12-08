@@ -902,8 +902,8 @@ function refreshTable() {
 
     }
     showUnsavedWarning();
-// Rufe die Funktion sortTableByzero() am Ende von refreshTable() auf
     sortTableByzero();
+    sortTableBynegative();
 event.preventDefault();
 
 }
@@ -926,6 +926,8 @@ function formatValue(number, originalValue) {
     return number.toString(); // Andernfalls gibt die Zahl als Text zurück
 }
 
+
+
 // Funktion zum Sortieren der Zeilen mit 0 in Spalte 2
 function sortTableByzero() {
     var table = document.getElementById("dataTable");
@@ -940,7 +942,7 @@ function sortTableByzero() {
         if (valueA === "0" && valueB !== "0") return 1;
         if (valueA !== "0" && valueB === "0") return -1;
 
-        
+
     });
 
     // Entferne bestehende Zeilen aus der Tabelle
@@ -948,6 +950,42 @@ function sortTableByzero() {
         table.appendChild(rows[i]);
     }
 }
+
+
+
+// Funktion zum Sortieren der Zeilen mit negativen Werten in Spalte 2 und Färben
+function sortTableBynegative() {
+    var table = document.getElementById("dataTable");
+    var rows = Array.from(table.rows);
+
+    // Sortiere die Zeilen, sodass die Zeilen mit negativen Werten in Spalte 2 ganz oben stehen
+    rows.sort(function(a, b) {
+        // Vergleiche die Werte in Spalte 2 (Menge)
+        var valueA = parseFloat(a.cells[1].textContent.trim());
+        var valueB = parseFloat(b.cells[1].textContent.trim());
+
+        // Zeilen mit negativen Werten sollen nach oben
+        return valueA < 0 && valueB >= 0 ? -1 :
+               valueA >= 0 && valueB < 0 ? 1 : 0;
+    });
+
+    // Entferne bestehende Zeilen aus der Tabelle
+    for (var i = 0; i < rows.length; i++) {
+        table.appendChild(rows[i]);
+    }
+
+    // Färbe Zeilen mit negativen Werten in Spalte 2 gelb
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var value = parseFloat(row.cells[1].textContent.trim());
+
+        // Wenn der Wert in Spalte 2 negativ ist, färbe die Zeile gelb
+        if (value < 0) {
+            row.style.backgroundColor = 'yellow';
+        }
+    }
+}
+
 
 
 
