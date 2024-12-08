@@ -1,45 +1,61 @@
 <meta charset="UTF-8">
 
-<p><strong>Datei auswählen und importieren:</strong> Datei befindet sich im geteilten Ordner im Unterverzeichnis <em> Inventar_Arzneimittel</em>. Bitte die neueste Datei auswählen.</p>
+        <p><strong>Start des Programms:</strong> Die Datei wird automatisch aus der Cloud importiert. Der Pfad in der Cloud lautet <em>/Apotheke/Arzneimittel/Arzneimittel_Inventar.txt</em> bzw. <em>/Apotheke/Medizinprodukte/Medizinprodukte_Inventar.txt</em></p>
 
-        <p><strong>Refresh:</strong> Mit Refresh werden alle Einträge, die denselben Barcode und dasselbe Ablaufdatum haben, zusammengeführt. Die Menge wird addiert. Die Einträge werden nach Ablaufdatum sortiert. Zusätzlich werden alle Einträge, die bereits abgelaufen sind oder im nächsten Monat ablaufen, rot markiert.</p>
+        <p><strong>Importieren:</strong> Ein externer Import (außerhalb der Cloud) wird durchgeführt. Es erscheint eine Warnung. Durch das Importieren außerhalb der Cloud wird sowohl die derzeitige Tabelle im Programm, als auch die Datei in der Cloud überschrieben. Über den Versionsverlauf ist die Wiederherstellung möglich, Account benötigt aber die Freigabe. <em> /Apotheke/Bibliothek.xlsx</em>.</p>
 
-        <p><strong>Ordnen nach Wirkstoff:</strong> Die Einträge werden alphabetisch nach dem Wirkstoff geordnet. (Abgelaufene Einträge werden nur mit <strong>Refresh</strong> rot gefärbt.)</p>
+        <p><strong>Refresh:</strong> Mit Refresh werden alle Einträge, die denselben Barcode und dasselbe Ablaufdatum haben, zusammengeführt. Die Menge wird addiert. Die Einträge werden nach Ablaufdatum sortiert. Zusätzlich werden alle Einträge, die bereits abgelaufen sind oder im nächsten Monat ablaufen, rot markiert. Einträge, die fälschlicherweise eine negative Menge haben, werden gelb markiert und nach oben sortiert.</p>
 
-         <p><strong>Menge:</strong> Bei diesem Button wird ein neues Fenster angezeigt. Die Einträge der Tabelle werden nach dem Barcode zusammengefasst, dabei werden die Mengen addiert. Das Ablaufdatum wird hier ignoriert. Dadurch sieht man, wie viel von einem Produkt insgesamt da ist.</p>
+        <p><strong>Ordnen nach Wirkstoff/Bezeichnung:</strong> Die Einträge werden alphabetisch nach dem Wirkstoff bzw. der Bezeichnung geordnet. (Abgelaufene Einträge werden nur mit <strong>Refresh</strong> rot gefärbt.)</p>
+
+         <p><strong>Menge:</strong> Ein neues Fenster wird angezeigt. Die Einträge der Tabelle werden nach dem Barcode zusammengefasst, dabei werden die Mengen addiert. Das Ablaufdatum wird hier ignoriert. Dadurch sieht man die Gesamtanzahl der einzelnen Produkte.</p>
     <ul>
-            <li><strong>Datei auswählen:</strong> Bitte wähle die Excel-Datei <em>Inventar_Lagerort, min. Lagermenge</em> aus. Dort sind die Mindestlagermengen der Produkte eingetragen. (Das Programm wählt automatisch das Blatt 1 der Excel-Datei aus.)</li>
-            <li><strong>Vergleichen:</strong> Das Inventar wird mit der Mindestlagermenge verglichen. In Spalte 2 steht die derzeitige Menge, in Spalte 3 steht die Mindestlagermenge. Ist die Menge eines Produktes im Inventar kleiner oder gleich der Mindestlagermenge, wird die Zeile orange markiert. Produkte, die im Inventar aber nicht in der Excel-Datei stehen, werden auch orange markiert. Die 3. Spalte bleibt dabei leer.</li>
-            <li>untere Tabelle: Hier werden Produkte angezeigt und orange gefärbt, die sich im Inventar befinden sollten, aber nicht im Inventar vorhanden sind</li>
-            <li><strong>Schließen (x):</strong> Das Fenster mit der gerade angezeigten Vergleichstabelle wird geschlossen (und nicht gespeichert). Es wird nun wieder die Tabelle angezeigt, die vor dem Klick auf den Button <strong>Menge</strong> gezeigt wurde. </li>
+            <li><strong>Vergleichen:</strong> Die Bibliothek wird automatisch aus der Cloud importiert. Der Pfad in der Cloud lautet <em> /Apotheke/Bibliothek.xlsx</em>. Die Bibliothek enthält u.a. auch die Mindestlagermengen. Das Inventar wird mit der Mindestlagermenge verglichen. In Spalte 2 steht die Inventar-Menge, in Spalte 3 steht die Mindestlagermenge. Ist die Menge eines Produktes im Inventar kleiner oder gleich der Mindestlagermenge, wird die Zeile orange markiert. Fehlt ein Produkt im Inventar, so wird es auch orange markiert, wobei die 3. Spalte dabei leer bleibt.</li>
+            <li><strong>untere Tabelle: </strong> Hier werden Produkte angezeigt und orange gefärbt, die sich im Inventar befinden, aber nicht in der Bibliothek stehen.</li>
+            <li><strong>Schließen (x):</strong> Das Fenster mit der gerade angezeigten Vergleichstabelle wird geschlossen (und nicht gespeichert). Ein erneutes Aufrufen ist jederzeit möglich.</li>
 
         </ul>
 
 
 
-        <p><strong>Exportieren:</strong> Tabelle wird als .txt exportiert und der Dateiname mit dem heutigen Datum und Uhrzeit versehen. Die Reihenfolge der Einträge in der .txt-Datei ist so wie in der aktuellen Tabelle. Datei bitte im geteilten Ordner im Unterverzeichnis <em> Inventar_Arzneimittel</em> speichern.</p>
+        <p><strong>Speichern:</strong> Die Tabelle wird in die Cloud hochgeladen. Die Datei in der Cloud wird überschrieben. Der Pfad in der Cloud lautet <em>/Apotheke/Arzneimittel/Arzneimittel_Inventar.txt</em> bzw. <em>/Apotheke/Medizinprodukte/Medizinprodukte_Inventar.txt</em>. Vor dem Schließen oder Neuladen des Programms kommt immer (außer Safari auf IOS) eine Standardmeldung vom Browser, um darauf hinzuweisen, die Tabelle zu speichern.</p>
 
-         <p><strong>On/Off-Schalter:</strong> Wenn der Schalter an ist (blau), kann jedes Tabellenfeld per Mausklick bearbeitet werden. Alle Buttons sind dabei deaktiviert. <span style="color: red;">Kein Tabellenfeld darf komplett leer sein!</span></p>
+        <p><strong>Extern Speichern:</strong> Die Tabelle wird als .txt exportiert und der Dateiname mit dem heutigen Datum und Uhrzeit versehen. Diese Funktion ist vor allem notwendig, wenn es Fehler mit der API gibt.</p>
+
+         <p><strong>On/Off-Schalter:</strong> On (blau): Jedes Tabellenfeld kann per Mausklick bearbeitet werden. Alle Buttons und Automatismen sind dabei deaktiviert. <span style="color: red;">Kein Tabellenfeld darf komplett leer sein!</span></p>
 
         <p><strong>Texteingabefelder:</strong></p>
         <ul>
-            <li>Barcode: Nach Eingabe des Barcodes und Klicken auf <strong>Suchen</strong> werden "Wirkstoff" und "Bezeichnung" automatisch in die Texteingabefelder hinzugefügt.</li>
+            <li><strong>Barcode: </strong> Nach Eingabe des Barcodes und Klicken auf <strong>Suchen</strong> werden "Wirkstoff" und "Bezeichnung" automatisch in die Texteingabefelder hinzugefügt.</li>
 
-            <li>Wirkstoff: Nach Eingabe des Wirkstoffes und Klicken auf <strong>Suchen</strong> werden "Barcode" und "Bezeichnung" automatisch in die Texteingabefelder hinzugefügt. (Sollte bereits etwas in "Barcode" stehen, wird der Begriff in "Wirkstoff" bei der Suche ignoriert.)</li>
+            <li><strong>Wirkstoff: </strong> Nach Eingabe des Wirkstoffes und Klicken auf <strong>Suchen</strong> werden "Barcode" und "Bezeichnung" automatisch in die Texteingabefelder hinzugefügt. (Sollte bereits Inhalt in "Barcode" stehen, wird der Begriff in "Wirkstoff" bei der Suche ignoriert.)</li>
 
-            <li>Bezeichnung: Nach Eingabe der Bezeichnung und Klicken auf <strong>Suchen</strong> werden "Barcode" und "Wirkstoff" automatisch in die Texteingabefelder hinzugefügt. (Sollte bereits etwas in "Barcode" oder "Wirkstoff" stehen, wird der Begriff in "Bezeichnung" bei der Suche ignoriert.)</li>
+            <li><strong>Bezeichnung: </strong> Nach Eingabe der Bezeichnung und Klicken auf <strong>Suchen</strong> werden "Barcode" und "Wirkstoff" automatisch in die Texteingabefelder hinzugefügt. (Sollte bereits Inhalt in "Barcode" oder "Wirkstoff" stehen, wird der Begriff in "Bezeichnung" bei der Suche ignoriert.)</li>
 
-            <li>Menge: Die Menge des Eintrages muss hinzugefügt werden.</li>
+            <li><strong>Menge: </strong> Die Menge des Eintrages muss hinzugefügt werden.</li>
 
-            <li>Ablaufdatum: Das Ablaufdatum des Eintrages muss hinzugefügt werden. (Im Format MM/YY)</li>
+            <li><strong>Ablaufdatum: </strong> Das Ablaufdatum des Eintrages muss hinzugefügt werden. (Im Format MM/YY)</li>
         </ul>
-        <p><strong>Suchen:</strong> "Barcode", "Wirkstoff" oder "Bezeichnung" werden automatisch in die Texteingabefelder hinzugefügt, wenn eines dieser 3 Textfelder ausgefüllt ist und wenn der Eintrag bereits in der Tabelle vorhanden ist. Die Priorität der Suche ist Barcode, Wirkstoff, Bezeichnung. Sollte der Eintrag noch nicht in der Tabelle vorhanden sein, kommt die Meldung: Neues Produkt! In dem Fall müssen alle Texteingabefelder manuell ausgefüllt werden.</p>
+        <p><strong>Suchen:</strong> "Barcode", "Wirkstoff" oder "Bezeichnung" werden automatisch in die Texteingabefelder hinzugefügt, wenn eines dieser 3 Textfelder ausgefüllt ist und, wenn der Eintrag bereits in der Tabelle vorhanden ist. Die Priorität der Suche ist Barcode, Wirkstoff, Bezeichnung. Sollte der Eintrag noch nicht in der Tabelle vorhanden sein, kommt die Meldung: Neues Produkt! In dem Fall müssen alle Texteingabefelder manuell ausgefüllt werden.</p>
 
-        <p><strong>Neuer Eintrag:</strong> Ein neuer Eintrag mit den Begriffen/Werten der Texteingabefelder wird in die Tabelle hinzugefügt. Der Button funktioniert nur dann, wenn alle Texteingabefelder ausgefüllt sind.</p>
+        <p><strong>Neuer Eintrag:</strong> Ein neuer Eintrag mit den Begriffen/Werten der Texteingabefelder wird in die Tabelle hinzugefügt. Der Button funktioniert erst, wenn alle Texteingabefelder ausgefüllt sind.</p>
+
+        <p><strong style="color: red; font-weight: bold;">Versionsverlauf:</strong> Der Versionsverlauf der Datei ist in der Cloud einsehbar. Der Account muss dafür freigegeben sein. <a href="https://www.dropbox.com/home/Apotheke" target="_blank">https://www.dropbox.com/home/Apotheke</a></p>
 
 
-        <p><strong style="color: red; font-weight: bold;">Speicherung der Einträge:</strong> Die Tabelle, die angezeigt wird, ist nie in der Webanwendung gespeichert. Daher muss am Ende der Session die Tabelle über <strong>Exportieren</strong> gespeichert werden. Bei Neuladen oder Beenden der Seite sowie bei erneutem Importieren wird die Tabelle zurückgesetzt.</p>
+<p><strong style="color: red; font-weight: bold;">Sicherung der Einträge:</strong> Die Tabelle wird NUR alle 60 Sekunden automatisch auf die Cloud hochgeladen (Es erfolgt ein Hinweis). Daher wird Empfohlen, vor jedem Neuladen oder Schließen des Programm die Speicherung manuell durchzuführen (<strong>Speichern</strong>). Im Bearbeitungsmodus ist die automatische Speicherung unterbrochen.</p>
 
-        <p><strong style="color: red; font-weight: bold;">Datensicherheit:</strong> Die Daten in der Tabelle sind nur lokal auf dem Gerät sichtbar und auch nur so lange, bis die Webanwendung aktualisiert wird bzw. beendet wird. Die Daten gelangen nicht ins Internet.</p>
+        <p><strong style="color: red; font-weight: bold;">Fehlermeldungen im Zusammenhang mit der Cloud-API:</strong> Es gibt 3 Arten von Fehlermeldungen im Zusammenhang mit der API. Generell gilt dabei: Wenn das Programm bereits eine Tabelle anzeigt, so wird diese automatisch extern gespeichert. Im Anschluss wird die Seite neu geladen. Ignorieren Sie ggf. die Standardmeldung des Browser, die vor Datenverlust warnt.</p>
+        <ul>
+            <li><strong>Access-Token fehlt: </strong> Authentifizierung ist nicht erfolgt.</li>
 
-        <p><strong style="color: red; font-weight: bold;">Bei Fragen:</strong> Leander Brunar (leander@brunar.com)</p>
+            <li><strong>Access-Token ungültig: </strong> Die Sitzung ist wahrscheinlich abgelaufen und muss erneuert werden. </li>
+
+            <li><strong>sonstige Fehler: </strong> Alle anderen Fehler könnten Probleme mit der API sein. Bei Fragen: apotheke@leanderbrunar.net</li>
+
+        </ul>
+
+
+        <p><strong style="color: red; font-weight: bold;">Datensicherheit:</strong> Die Daten der Tabelle sind über eine sichere API auf einer Cloud (Dropbox) gespeichert. Der Zugang zur API ist nur nach erfolgreicher Authentifizierung möglich. Eine Authentifizierung ist nur möglich, wenn man den richtigen App-Key (= Passwort, das bei Sitzungsstart eingeben und verschlüsselt wird) hat.</p>
+
+        <p><strong style="color: red; font-weight: bold;">Kontakt:</strong> Leander Brunar (apotheke@leanderbrunar.net)</p>
