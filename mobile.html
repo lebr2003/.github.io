@@ -59,41 +59,50 @@
     </style>
 
 <script>
-    // Funktion zur Überprüfung und Öffnen des Links
-    function openLink(url) {
-        // Hole die gespeicherten geöffneten URLs aus sessionStorage
-        let openTabs = JSON.parse(sessionStorage.getItem("openTabs")) || {};
+    // Funktion zur Überprüfung und Verwaltung von Tabs
+    function checkAndOpenTab(url) {
+        // Überprüfen, ob offene Tabs im sessionStorage gespeichert sind
+        const openTabs = JSON.parse(sessionStorage.getItem('openTabs')) || {};
 
-        // Überprüfen, ob der Link bereits in einem Tab geöffnet ist
-        if (openTabs[url]) {
-            // Wenn ja, fokussiere den Tab, indem du die URL im gleichen Tab lädst
-            window.location.href = url; // Gleiche Seite im aktuellen Tab öffnen
+        // Setzen eines eindeutigen Namens für den Tab basierend auf der URL
+        const tabName = encodeURIComponent(url); // URL wird kodiert, um als Name verwendet zu werden
+
+        if (openTabs[tabName] && !openTabs[tabName].closed) {
+            // Wenn der Tab existiert und nicht geschlossen wurde, fokussiere den Tab (ohne neu zu laden)
+            openTabs[tabName]();
         } else {
-            // Wenn nicht, öffne den Link in einem neuen Tab
-            let newTab = window.open(url, "_blank");
-            openTabs[url] = true; // Tab als geöffnet markieren
-            sessionStorage.setItem("openTabs", JSON.stringify(openTabs));
+            // Andernfalls ein neues Tab öffnen (der Name wird auf die URL gesetzt)
+            const newTab = window.open(url, tabName);
+            // Speichern des neuen Tabs im sessionStorage
+            openTabs[tabName] = newTab;
+            sessionStorage.setItem('openTabs', JSON.stringify(openTabs));
         }
     }
 
-    // Event-Listener für die Links hinzufügen
+    // Event-Listener für Links setzen
     document.addEventListener("DOMContentLoaded", () => {
-        // Alle Links durchsuchen
+        // Alle Links auf der Seite finden
         document.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", event => {
-                event.preventDefault(); // Standard-Link-Verhalten verhindern
-                const url = event.target.href; // URL des geklickten Links
+                event.preventDefault(); // Verhindere das Standardverhalten (Neuladen der Seite)
+                const url = event.target.href; // Die URL des Links
 
-                openLink(url); // Die Funktion zum Öffnen/Fokussieren des Links aufrufen
+                // Die Funktion zur Tab-Prüfung und -Öffnung aufrufen
+                checkAndOpenTab(url);
             });
         });
     });
 
-    // Alle Tabs im sessionStorage beim Schließen der Seite löschen
+    // Beim Schließen der Seite alle Tabs im sessionStorage als geschlossen markieren
     window.addEventListener("beforeunload", () => {
-        sessionStorage.removeItem("openTabs");
+        const openTabs = JSON.parse(sessionStorage.getItem('openTabs')) || {};
+        for (const tabName in openTabs) {
+            if (openTabs[tabName] && !openTabs[tabName].closed) {
+                openTabs[tabName].close(); // Tab schließen
+            }
+        }
+        sessionStorage.setItem('openTabs', JSON.stringify({})); // Leeren des sessionStorage beim Schließen
     });
-
 
 
 
