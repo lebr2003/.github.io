@@ -59,7 +59,6 @@
     </style>
 
 <script>
-
     // Funktion zur Überprüfung und Verwaltung von Tabs
     function checkAndOpenTab(url) {
         // Überprüfen, ob offene Tabs im sessionStorage gespeichert sind
@@ -68,11 +67,15 @@
         // Setzen eines eindeutigen Namens für den Tab basierend auf der URL
         const tabName = encodeURIComponent(url); // URL wird kodiert, um als Name verwendet zu werden
 
-        if (openTabs[tabName] && !openTabs[tabName].closed) {
-            // Wenn der Tab existiert und nicht geschlossen wurde, fokussiere den Tab (ohne neu zu laden)
+        // Prüfen, ob der Tab schon existiert
+        if (openTabs[tabName]) {
+            // Tab fokussieren (ohne neu zu laden)
             openTabs[tabName].focus();
         } else {
-            // Andernfalls ein neues Tab öffnen (der Name wird auf die URL gesetzt)
+            // Andernfalls navigiere im selben Tab
+            window.location.href = url;
+
+            // Wenn ein neuer Tab geöffnet wird (z.B. nach einem Refresh oder einer neuen Sitzung):
             const newTab = window.open(url, tabName);
             // Speichern des neuen Tabs im sessionStorage
             openTabs[tabName] = newTab;
@@ -104,6 +107,8 @@
         }
         sessionStorage.setItem('openTabs', JSON.stringify({})); // Leeren des sessionStorage beim Schließen
     });
+
+
 
     // Funktion, um den Access Token aus der URL zu extrahieren
     function getAccessToken() {
