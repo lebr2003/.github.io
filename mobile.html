@@ -67,15 +67,11 @@
         // Setzen eines eindeutigen Namens für den Tab basierend auf der URL
         const tabName = encodeURIComponent(url); // URL wird kodiert, um als Name verwendet zu werden
 
-        // Prüfen, ob der Tab schon existiert
-        if (openTabs[tabName]) {
-            // Tab fokussieren (ohne neu zu laden)
+        if (openTabs[tabName] && !openTabs[tabName].closed) {
+            // Wenn der Tab existiert und nicht geschlossen wurde, fokussiere den Tab (ohne neu zu laden)
             openTabs[tabName].focus();
         } else {
-            // Andernfalls navigiere im selben Tab
-            window.location.href = url;
-
-            // Wenn ein neuer Tab geöffnet wird (z.B. nach einem Refresh oder einer neuen Sitzung):
+            // Andernfalls ein neues Tab öffnen (der Name wird auf die URL gesetzt)
             const newTab = window.open(url, tabName);
             // Speichern des neuen Tabs im sessionStorage
             openTabs[tabName] = newTab;
