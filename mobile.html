@@ -69,7 +69,7 @@
 
         if (openTabs[tabName] && !openTabs[tabName].closed) {
             // Wenn der Tab existiert und nicht geschlossen wurde, fokussiere den Tab (ohne neu zu laden)
-            openTabs[tabName]();
+            openTabs[tabName].focus();
         } else {
             // Andernfalls ein neues Tab öffnen (der Name wird auf die URL gesetzt)
             const newTab = window.open(url, tabName);
