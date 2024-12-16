@@ -1662,7 +1662,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (storedData) {
             const bibliothek = JSON.parse(storedData);
-            bibliothek.forEach(item => {
+            bibliothek.forEach((item, index) => {
+                if (index === 0) return; // Überspringe die erste Zeile
                 const wirkstoff = item[1]; // Spalte 2 enthält den Wirkstoff
                 if (wirkstoff && wirkstoff !== '') {
                     wirkstoffData.push(wirkstoff);
@@ -1798,7 +1799,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (storedData) {
             const bibliothek = JSON.parse(storedData);
-            bibliothek.forEach(item => {
+            bibliothek.forEach((item, index) => {
+                if (index === 0) return; // Überspringe die erste Zeile
                 const bezeichnung = item[2]; // Spalte 3 enthält die Bezeichnung
                 if (bezeichnung && bezeichnung !== '') {
                     bezeichnungData.push(bezeichnung);

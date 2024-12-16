@@ -1546,7 +1546,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (storedData) {
             const bibliothek = JSON.parse(storedData);
-            bibliothek.forEach(item => {
+            bibliothek.forEach((item, index) => {
+                if (index === 0) return; // Überspringe die erste Zeile
                 const bezeichnung = item[1]; // Spalte 2 enthält die Bezeichnung
                 if (bezeichnung && bezeichnung !== '') {
                     bezeichnungData.push(bezeichnung);
