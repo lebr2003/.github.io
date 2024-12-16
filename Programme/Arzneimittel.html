@@ -386,7 +386,7 @@ button.disabled-button {
 <form id="form2" style="display: none;">
 <button type="button" class="blue-button" onclick="returnToForm1()">X</button>
 <input type="file" id="excelFileInput" style="display: none;" />
-<button type="button" onclick="importExcelFile()" style="margin-left: 10px;">Vergleichen</button>
+<button type="button" onclick="compareAndDisplay()" style="margin-left: 10px;">Vergleichen</button>
 
     <div class="header-words">
         <span>Barcode</span>
@@ -405,7 +405,7 @@ button.disabled-button {
     </div>
 
 
- <p class="großer-abstand">Produkte, die nicht in der Bibliothek enthalten sind:</p>
+ <p class="großer-abstand">Produkte, die nicht im Inventar enthalten sind:</p>
 
 
     <div class="header-words">
@@ -493,6 +493,7 @@ function importTextFileFromCloud() {
                     }
                 } else {
                     console.log("Token gültig: " + accessToken);
+                    importBibliothekFromCloud();
 
                     // API-Aufruf, um die Datei von Dropbox herunterzuladen
                     fetch('https://content.dropboxapi.com/2/files/download', {
@@ -623,6 +624,75 @@ function importButton() {
     }
 }
 
+
+// Funktion, um Bibliothek von Dropbox herunterzuladen und im localStorage zu speichern
+function importBibliothekFromCloud() {
+    const accessToken = getAccessTokenFromLocalStorage(); // Den Access Token aus dem LocalStorage holen
+    const dropboxFilePath = '/Apotheke/Bibliothek.xlsx';
+
+    // API-Aufruf, um die Datei von Dropbox herunterzuladen
+    fetch('https://content.dropboxapi.com/2/files/download', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Dropbox-API-Arg': JSON.stringify({
+                path: dropboxFilePath
+            })
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Fehler beim Herunterladen der Bibliothek.');
+        }
+        return response.blob(); // Antwort als Blob zurückgeben
+    })
+    .then(blob => {
+        // Erstelle ein FileReader-Objekt, um den Blob zu lesen
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const content = e.target.result;
+            const workbook = XLSX.read(content, { type: 'binary' });
+
+            // Annahme: Wir nehmen das erste Arbeitsblatt
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+
+            // Konvertiere das Arbeitsblatt in ein 2D-Array
+            const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+            // Überschrift für die Spalten hinzufügen
+            const headers = ["Barcode", "Wirkstoff", "Bezeichnung", "mind. Menge", "Lagerort"];
+
+            // Entferne die erste Zeile und behalte nur die ersten 5 Spalten (A bis E)
+            const trimmedData = data.slice(1).map(row => row.slice(0, 5));
+
+            // Formatieren der Zahlen, um sie ohne Tausender-Trennzeichen oder Dezimalstellen anzuzeigen
+            const formattedData = trimmedData.map(row => {
+                return row.map(cell => {
+                    if (typeof cell === 'number') {
+                        return cell.toString();
+                    }
+                    return cell;
+                });
+            });
+
+            // Füge die Überschrift hinzu
+            formattedData.unshift(headers);
+
+            // Speichere die formatierten Daten im localStorage als JSON
+            localStorage.setItem('Bibliothek_Arzneimittel', JSON.stringify(formattedData));
+
+            console.log('Bibliothek erfolgreich im localStorage gespeichert.');
+        };
+
+        // Lese den Blob als binären String
+        reader.readAsBinaryString(blob);
+    })
+    .catch(error => {
+        console.error('Fehler:', error);
+    });
+}
 
 
 
@@ -815,8 +885,9 @@ event.preventDefault();
 }
 
 function saveButton() {
+    event.preventDefault();
     exportTextFileToCloud();
-event.preventDefault();
+
 }
 
 
@@ -1419,156 +1490,52 @@ function returnToForm1() {
 }
 
 
-function importExcelFile() {
-    const accessToken = getAccessTokenFromLocalStorage();  // Den Access Token aus dem LocalStorage holen
-    const dropboxFilePath = '/Apotheke/Bibliothek.xlsx';
-
-    if (!accessToken) {
-        exportTextFiletoExtern();
-        const now = new Date();
-        const timestamp = now.toLocaleString('de-DE', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).replace(/[^0-9]/g, '_');
-        const fileName = `Arzneimittel_${timestamp}.txt`;
-
-        const userConfirmed = confirm(
-            `Kein Access Token gefunden. \n` +
-            `Die Datei wurde in den Downloads gespeichert: ${fileName} \n\n` +
-            `Melden Sie sich an und importieren Sie anschließend die Datei über 'Importieren'`
-        );
-
-        if (userConfirmed) {
-            // Umleitung, wenn der Benutzer auf "OK" klickt
-            window.location.href = '../login.html';
-        }
-    } else {
-        // Token Überprüfung
-        checkTokenValidity(accessToken)
-            .then(isValid => {
-                if (!isValid) {
-                    // Token ungültig
-
-                    exportTextFiletoExtern();
-                    const now = new Date();
-                    const timestamp = now.toLocaleString('de-DE', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    }).replace(/[^0-9]/g, '_');
-                    const fileName = `Arzneimittel_${timestamp}.txt`;
-
-                    const userConfirmed = confirm(
-                        `Der Access Token ist ungültig. \n` +
-                        `Die Datei wurde in den Downloads gespeichert: ${fileName} \n\n` +
-                        `Melden Sie sich erneut an und importieren Sie anschließend die Datei über 'Importieren'`
-                    );
-
-                    if (userConfirmed) {
-                        // Umleitung, wenn der Benutzer auf "OK" klickt
-                        window.location.href = '../login.html';
-                    }
-                } else {
-                    // Token gültig
-                    console.log("Token gültig: " + accessToken);
-
-                    // API-Aufruf, um die Datei von Dropbox herunterzuladen
-                    fetch('https://content.dropboxapi.com/2/files/download', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer ' + accessToken,
-                            'Dropbox-API-Arg': JSON.stringify({
-                                path: dropboxFilePath
-                            })
-                        }
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Fehler beim Herunterladen der Datei.');
-                            }
-                            return response.blob(); // Antwort als Blob zurückgeben
-                        })
-                        .then(blob => {
-                            // Erstelle ein File-Objekt aus dem Blob (mit dem richtigen MIME-Typ für Excel)
-                            const fileInput = new File([blob], 'Bibliothek.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                            const tableC = document.getElementById('tableC');
-
-                            // Verstecke die Tabelle während des Imports und behalte sie unsichtbar
-                            tableC.style.display = 'none';
-
-                            if (fileInput) {
-                                const reader = new FileReader();
-
-                                reader.onload = function (e) {
-                                    const content = e.target.result;
-                                    const workbook = XLSX.read(content, { type: 'binary' });
-
-                                    // Annahme: Wir nehmen das erste Arbeitsblatt
-                                    const sheetName = workbook.SheetNames[0];
-                                    const sheet = workbook.Sheets[sheetName];
-
-                                    // Konvertiere das Arbeitsblatt in ein 2D-Array
-                                    const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-                                    // Behalte nur die ersten 5 Spalten (A bis E)
-                                    const trimmedData = data.map(row => row.slice(0, 5));
-
-                                    // Formatieren der Zahlen, um sie ohne Tausender-Trennzeichen oder Dezimalstellen anzuzeigen
-                                    const formattedData = trimmedData.map(row => {
-                                        return row.map(cell => {
-                                            if (typeof cell === 'number') {
-                                                return cell.toString();
-                                            }
-                                            return cell;
-                                        });
-                                    });
-
-                                    // Konvertiere das bearbeitete 2D-Array zurück in HTML
-                                    const htmlTable = XLSX.utils.aoa_to_sheet(formattedData);
-
-                                    // Fügen Sie die HTML-Tabelle in TableC ein
-                                    tableC.innerHTML = XLSX.utils.sheet_to_html(htmlTable);
-
-                                    // Entfernen Sie die erste Zeile (Zeile 1) aus der Tabelle
-                                    const firstRow = tableC.querySelector('tr');
-                                    if (firstRow) {
-                                        firstRow.remove();
-                                    }
-
-                                    // Rufe die Funktionen nacheinander auf
-                                    sortByWirkstoffTableB();
-                                    compareAndDisplay();
-                                };
-
-                                reader.readAsBinaryString(fileInput);
-                            } else {
-                                showAlert("Bitte eine Excel-Datei auswählen.");
-                            }
-                        })
-                        .catch(error => {
-                            alert("Fehler beim Herunterladen der Datei: " + error.message);
-                        });
-                }
-            })
-            .catch(error => {
-                alert("Fehler beim Überprüfen des Tokens. Bitte versuchen Sie es später.");
-            });
-    }
-}
-
-
-
-
-
+// Funktion, um Daten aus dem localStorage zu laden und in TableC darzustellen
 function compareAndDisplay() {
-    compareTables(); // Funktion compareTables aufrufen
-    displayMissingRows(); // Funktion displayMissingRows aufrufen
+    const tableC = document.getElementById('tableC');
+
+    // Daten aus dem localStorage abrufen
+    const storedData = localStorage.getItem('Bibliothek_Arzneimittel');
+
+    if (!storedData) {
+        alert("Keine Bibliothek gefunden. Bitte laden Sie die Seite neu.");
+        return;
+    }
+
+    // JSON-Daten parsen
+    const parsedData = JSON.parse(storedData);
+
+    // Entferne die Überschrift (Zeile 0)
+    const dataWithoutHeaders = parsedData.slice(1);
+
+    // Tabelle leeren
+    tableC.innerHTML = '';
+
+    // Daten in die Tabelle einfügen
+    dataWithoutHeaders.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cell => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+        });
+        tableC.appendChild(tr);
+    });
+
+    // Tabelle verstecken
+    tableC.style.display = 'none';
+
+    // Weitere Funktionen aufrufen, falls nötig
+    sortByWirkstoffTableB();
+    compareTables();
+    displayMissingRows();
+
+event.preventDefault();
+
 }
+
+
+
 
 
 
@@ -1688,15 +1655,19 @@ function sortByWirkstoffTableB() {
 document.addEventListener('DOMContentLoaded', function () {
     let selectedIndex = 0; // Index des aktuell anvisierten Elements
 
-    // Extrahiere die Daten aus Spalte 4 (Index 3) der Tabelle für die Autocomplete-Funktion.
-    const extractWirkstoffData = () => {
+    // Extrahiere die Wirkstoffdaten aus dem localStorage
+    const extractWirkstoffDataFromLocalStorage = () => {
         const wirkstoffData = [];
-        const dataTable = document.getElementById('dataTable');
-        for (let i = 0; i < dataTable.rows.length; i++) {
-            const cellValue = dataTable.rows[i].cells[3].innerText.trim(); // Spalte 4 (Index 3)
-            if (cellValue !== '') {
-                wirkstoffData.push(cellValue);
-            }
+        const storedData = localStorage.getItem('Bibliothek_Arzneimittel');
+
+        if (storedData) {
+            const bibliothek = JSON.parse(storedData);
+            bibliothek.forEach(item => {
+                const wirkstoff = item[1]; // Spalte 2 enthält den Wirkstoff
+                if (wirkstoff && wirkstoff !== '') {
+                    wirkstoffData.push(wirkstoff);
+                }
+            });
         }
         return wirkstoffData;
     };
@@ -1707,7 +1678,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Aktiviere die Autocomplete-Funktion für das Wirkstoff-Textfeld.
     wirkstoffInput.addEventListener('input', function () {
         const inputText = this.value.toLowerCase();
-        const wirkstoffData = extractWirkstoffData();
+        const wirkstoffData = extractWirkstoffDataFromLocalStorage();
         const filteredData = wirkstoffData.filter(wirkstoff => wirkstoff.toLowerCase().includes(inputText));
         createAutocompleteDropdown(filteredData);
         selectedIndex = 0; // Setze den Index auf das oberste Element zurück, wenn sich der Text ändert
@@ -1820,18 +1791,23 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     let selectedIndex = 0; // Index des aktuell anvisierten Elements
 
-    // Extrahiere die Daten aus Spalte 5 (Index 4) der Tabelle für die Autocomplete-Funktion.
-    const extractBezeichnungData = () => {
+    // Extrahiere die Bezeichnungdaten aus dem localStorage
+    const extractBezeichnungDataFromLocalStorage = () => {
         const bezeichnungData = [];
-        const dataTable = document.getElementById('dataTable');
-        for (let i = 0; i < dataTable.rows.length; i++) {
-            const cellValue = dataTable.rows[i].cells[4].innerText.trim(); // Spalte 5 (Index 4)
-            if (cellValue !== '') {
-                bezeichnungData.push(cellValue);
-            }
+        const storedData = localStorage.getItem('Bibliothek_Arzneimittel');
+
+        if (storedData) {
+            const bibliothek = JSON.parse(storedData);
+            bibliothek.forEach(item => {
+                const bezeichnung = item[2]; // Spalte 3 enthält die Bezeichnung
+                if (bezeichnung && bezeichnung !== '') {
+                    bezeichnungData.push(bezeichnung);
+                }
+            });
         }
         return bezeichnungData;
     };
+
 
     const bezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]');
     const unsavedWarning = document.getElementById('unsavedWarning');
@@ -1839,7 +1815,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Aktiviere die Autocomplete-Funktion für das Bezeichnung-Textfeld.
     bezeichnungInput.addEventListener('input', function () {
         const inputText = this.value.toLowerCase();
-        const bezeichnungData = extractBezeichnungData();
+        const bezeichnungData = extractBezeichnungDataFromLocalStorage();
         const filteredData = bezeichnungData.filter(bezeichnung => bezeichnung.toLowerCase().includes(inputText));
         createAutocompleteDropdown(filteredData);
         selectedIndex = 0; // Setze den Index auf das oberste Element zurück, wenn sich der Text ändert
@@ -1951,6 +1927,15 @@ window.onload = function() {
     startExportTimer(); // Startet den Timer beim Laden der Seite
 };
 
+document.addEventListener('keydown', function(event) {
+    // Verhindere 'Enter' nur, wenn der Fokus auf einem Textfeld liegt
+    const isInputField = event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA';
+
+    if (isInputField && event.key === 'Enter') {
+        console.log('Enter in einem Textfeld gedrückt!');
+        event.preventDefault(); // Verhindert das Standardverhalten in Textfeldern
+    }
+});
 
 
 
