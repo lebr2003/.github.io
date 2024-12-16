@@ -1053,28 +1053,25 @@ event.preventDefault();
 }
 
 function searchByBarcode(barcode) {
-    // Dein Code zur Suche nach dem Barcode
-    // Beispiel:
-    var table = document.getElementById('dataTable');
-    var rows = table.getElementsByTagName('tr');
-    var found = false;
+    // Extrahiere die Daten aus dem localStorage
+    const storedData = localStorage.getItem('Bibliothek_Medizinprodukte');
+    let found = false;
 
-    for (var i = 0; i < rows.length; i++) {
-        var cells = rows[i].getElementsByTagName('td');
-        if (cells.length > 0) {
-            var cellValue = cells[0].textContent.trim();
-            if (cellValue === barcode) {
+    if (storedData) {
+        const bibliothek = JSON.parse(storedData);
+
+        // Suche nach dem Barcode in der JSON-Struktur
+        bibliothek.forEach(item => {
+            const barcodeValue = item[0]; // Spalte 1: Barcode
+            const bezeichnungValue = item[1]; // Spalte 2: Bezeichnung
+
+            if (barcodeValue === barcode) {
                 // Barcode wurde gefunden
-                var BezeichnungValue = cells[3].textContent;
-
-                // Setze die gefundenen Werte in das Textfeld "Bezeichnung"
-                
-                document.querySelector('input[placeholder="Bezeichnung"]').value = BezeichnungValue;
+                document.querySelector('input[placeholder="Bezeichnung"]').value = bezeichnungValue;
 
                 found = true;
-                break;
             }
-        }
+        });
     }
 
     if (!found) {
@@ -1082,35 +1079,37 @@ function searchByBarcode(barcode) {
     }
 }
 
+
+
 function searchByBezeichnung(Bezeichnung) {
     // Textfeld "Bezeichnung" auslesen
-    var BezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]').value;
+    var BezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]').value.trim().toLowerCase();
 
-    // Textfeld "Barcode" leeren
+    // Textfelder "Barcode" und "Wirkstoff" leeren
     document.querySelector('input[placeholder="Barcode"]').value = '';
 
-    // Tabelle durchsuchen
-    var table = document.getElementById('dataTable');
-    var rows = table.getElementsByTagName('tr');
+    // Daten aus dem localStorage laden
+    const storedData = localStorage.getItem('Bibliothek_Medizinprodukte');
     var found = false;
 
-    for (var i = 0; i < rows.length; i++) {
-        var cells = rows[i].getElementsByTagName('td');
-        if (cells.length > 0) {
-            var cellValue = cells[3].textContent.trim().toLowerCase();
-var BezeichnungInputNormalized = BezeichnungInput.trim().toLowerCase();
+    if (storedData) {
+        const bibliothek = JSON.parse(storedData);
 
-if (cellValue === BezeichnungInputNormalized) {
-                // Begriff wurde in Spalte 4 gefunden
-                var barcodeValue = cells[0].textContent; // Wert in Spalte 1 (Barcode)
-               
-                // Setze die gefundenen Werte in das Textfeld "Barcode"
+        // JSON-Daten durchsuchen
+        bibliothek.forEach(item => {
+            // Sicherstellen, dass item[2] existiert und keine Fehler verursacht
+            var cellValue = item[1] ? item[1].trim().toLowerCase() : '';
+
+            if (cellValue === BezeichnungInput) {
+                // Begriff wurde in Spalte 2 gefunden
+                var barcodeValue = item[0] || ''; // Spalte 1: Barcode
+
+                // Setze die gefundenen Werte in die Textfelder "Barcode" und "Wirkstoff"
                 document.querySelector('input[placeholder="Barcode"]').value = barcodeValue;
-               
+
                 found = true;
-                break; // Der Begriff wurde gefunden, beende die Schleife
             }
-        }
+        });
     }
 
     // Meldung, wenn Begriff nicht gefunden wurde
@@ -1682,7 +1681,6 @@ document.addEventListener('keydown', function(event) {
     const isInputField = event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA';
 
     if (isInputField && event.key === 'Enter') {
-        console.log('Enter in einem Textfeld gedrückt!');
         event.preventDefault(); // Verhindert das Standardverhalten in Textfeldern
     }
 });

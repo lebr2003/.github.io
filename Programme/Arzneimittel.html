@@ -1117,29 +1117,27 @@ event.preventDefault();
 }
 
 function searchByBarcode(barcode) {
-    // Dein Code zur Suche nach dem Barcode
-    // Beispiel:
-    var table = document.getElementById('dataTable');
-    var rows = table.getElementsByTagName('tr');
-    var found = false;
+    // Extrahiere die Daten aus dem localStorage
+    const storedData = localStorage.getItem('Bibliothek_Arzneimittel');
+    let found = false;
 
-    for (var i = 0; i < rows.length; i++) {
-        var cells = rows[i].getElementsByTagName('td');
-        if (cells.length > 0) {
-            var cellValue = cells[0].textContent.trim();
-            if (cellValue === barcode) {
+    if (storedData) {
+        const bibliothek = JSON.parse(storedData);
+
+        // Suche nach dem Barcode in der JSON-Struktur
+        bibliothek.forEach(item => {
+            const barcodeValue = item[0]; // Spalte 1: Barcode
+            const wirkstoffValue = item[1]; // Spalte 2: Wirkstoff
+            const bezeichnungValue = item[2]; // Spalte 3: Bezeichnung
+
+            if (barcodeValue === barcode) {
                 // Barcode wurde gefunden
-                var wirkstoffValue = cells[3].textContent;
-                var BezeichnungValue = cells[4].textContent;
-
-                // Setze die gefundenen Werte in die Textfelder "Wirkstoff" und "Bezeichnung"
                 document.querySelector('input[placeholder="Wirkstoff"]').value = wirkstoffValue;
-                document.querySelector('input[placeholder="Bezeichnung"]').value = BezeichnungValue;
+                document.querySelector('input[placeholder="Bezeichnung"]').value = bezeichnungValue;
 
                 found = true;
-                break;
             }
-        }
+        });
     }
 
     if (!found) {
@@ -1147,36 +1145,36 @@ function searchByBarcode(barcode) {
     }
 }
 
+
 function searchByWirkstoff(wirkstoff) {
     // Textfeld "Wirkstoff" auslesen
-    var wirkstoffInput = document.querySelector('input[placeholder="Wirkstoff"]').value.trim().toLowerCase();
+    const wirkstoffInput = wirkstoff.trim().toLowerCase();
 
     // Textfelder "Barcode" und "Bezeichnung" leeren
     document.querySelector('input[placeholder="Barcode"]').value = '';
     document.querySelector('input[placeholder="Bezeichnung"]').value = '';
 
-    // Tabelle durchsuchen
-    var table = document.getElementById('dataTable');
-    var rows = table.getElementsByTagName('tr');
-    var found = false;
+    // Extrahiere die Daten aus dem localStorage
+    const storedData = localStorage.getItem('Bibliothek_Arzneimittel');
+    let found = false;
 
-    for (var i = 0; i < rows.length; i++) {
-        var cells = rows[i].getElementsByTagName('td');
-        if (cells.length > 0) {
-            var cellValue = cells[3].textContent.trim().toLowerCase(); // Wert in Spalte 4 (Wirkstoff)
-            if (cellValue === wirkstoffInput) {
-                // Begriff wurde in Spalte 4 gefunden
-                var barcodeValue = cells[0].textContent; // Wert in Spalte 1 (Barcode)
-                var BezeichnungValue = cells[4].textContent; // Wert in Spalte 5 (Bezeichnung)
+    if (storedData) {
+        const bibliothek = JSON.parse(storedData);
 
-                // Setze die gefundenen Werte in die Textfelder "Barcode" und "Bezeichnung"
+        // Suche nach dem Wirkstoff in der JSON-Struktur
+        bibliothek.forEach(item => {
+            const wirkstoffValue = item[1].trim().toLowerCase(); // Spalte 2: Wirkstoff
+            const barcodeValue = item[0]; // Spalte 1: Barcode
+            const bezeichnungValue = item[2]; // Spalte 3: Bezeichnung
+
+            if (wirkstoffValue === wirkstoffInput) {
+                // Wirkstoff wurde gefunden
                 document.querySelector('input[placeholder="Barcode"]').value = barcodeValue;
-                document.querySelector('input[placeholder="Bezeichnung"]').value = BezeichnungValue;
+                document.querySelector('input[placeholder="Bezeichnung"]').value = bezeichnungValue;
 
                 found = true;
-                break; // Der Begriff wurde gefunden, beende die Schleife
             }
-        }
+        });
     }
 
     // Meldung, wenn Begriff nicht gefunden wurde
@@ -1185,38 +1183,39 @@ function searchByWirkstoff(wirkstoff) {
     }
 }
 
+
 function searchByBezeichnung(Bezeichnung) {
     // Textfeld "Bezeichnung" auslesen
-    var BezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]').value;
+    var BezeichnungInput = document.querySelector('input[placeholder="Bezeichnung"]').value.trim().toLowerCase();
 
     // Textfelder "Barcode" und "Wirkstoff" leeren
     document.querySelector('input[placeholder="Barcode"]').value = '';
     document.querySelector('input[placeholder="Wirkstoff"]').value = '';
 
-    // Tabelle durchsuchen
-    var table = document.getElementById('dataTable');
-    var rows = table.getElementsByTagName('tr');
+    // Daten aus dem localStorage laden
+    const storedData = localStorage.getItem('Bibliothek_Arzneimittel');
     var found = false;
 
-    for (var i = 0; i < rows.length; i++) {
-        var cells = rows[i].getElementsByTagName('td');
-        if (cells.length > 0) {
-            var cellValue = cells[4].textContent.trim().toLowerCase();
-var BezeichnungInputNormalized = BezeichnungInput.trim().toLowerCase();
+    if (storedData) {
+        const bibliothek = JSON.parse(storedData);
 
-if (cellValue === BezeichnungInputNormalized) {
-                // Begriff wurde in Spalte 5 gefunden
-                var barcodeValue = cells[0].textContent; // Wert in Spalte 1 (Barcode)
-                var wirkstoffValue = cells[3].textContent; // Wert in Spalte 4 (Wirkstoff)
+        // JSON-Daten durchsuchen
+        bibliothek.forEach(item => {
+            // Sicherstellen, dass item[2] existiert und keine Fehler verursacht
+            var cellValue = item[2] ? item[2].trim().toLowerCase() : '';
+
+            if (cellValue === BezeichnungInput) {
+                // Begriff wurde in Spalte 3 gefunden
+                var barcodeValue = item[0] || ''; // Spalte 1: Barcode
+                var wirkstoffValue = item[1] || ''; // Spalte 2: Wirkstoff
 
                 // Setze die gefundenen Werte in die Textfelder "Barcode" und "Wirkstoff"
                 document.querySelector('input[placeholder="Barcode"]').value = barcodeValue;
                 document.querySelector('input[placeholder="Wirkstoff"]').value = wirkstoffValue;
 
                 found = true;
-                break; // Der Begriff wurde gefunden, beende die Schleife
             }
-        }
+        });
     }
 
     // Meldung, wenn Begriff nicht gefunden wurde
@@ -1224,6 +1223,7 @@ if (cellValue === BezeichnungInputNormalized) {
         showAlert("Neues Produkt!");
     }
 }
+
 
 
 function addNewEntry() {
@@ -1934,7 +1934,6 @@ document.addEventListener('keydown', function(event) {
     const isInputField = event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA';
 
     if (isInputField && event.key === 'Enter') {
-        console.log('Enter in einem Textfeld gedrückt!');
         event.preventDefault(); // Verhindert das Standardverhalten in Textfeldern
     }
 });
