@@ -16,11 +16,12 @@
 
 
 window.addEventListener('beforeunload', function (e) {
-
-    // Tab-Eintrag aus localStorage entfernen
-    const message = "Haben Sie die Datei hochgeladen? Die Datei wird lokal gelöscht, sobald Sie die Seite verlassen oder neu laden.";
-    e.returnValue = message; // Zeigt in unterstützten Browsern die Warnung an
-    return message; // Manche Browser ignorieren returnValue und verwenden eine Standardnachricht
+    const unsavedWarning = document.getElementById('unsavedWarning');
+    if (unsavedWarning && unsavedWarning.style.display !== 'none') {
+        const message = "Haben Sie die Datei hochgeladen? Die Datei wird lokal gelöscht, sobald Sie die Seite verlassen oder neu laden.";
+        e.returnValue = message; // Zeigt in unterstützten Browsern die Warnung an
+        return message; // Manche Browser ignorieren returnValue und verwenden eine Standardnachricht
+    }
 });
 
 
@@ -975,10 +976,18 @@ function refreshTable() {
          row.style.backgroundColor = 'white';
       }
 
-
     }
+
+    // Entfernen von Zeilen mit Menge = 0
+    const allRows = Array.from(dataTable.getElementsByTagName('tr'));
+    for (const row of allRows) {
+        const cells = row.getElementsByTagName('td');
+        if (parseInt(cells[1].textContent, 10) === 0) {
+            dataTable.removeChild(row);
+        }
+    }
+
     showUnsavedWarning();
-    sortTableByzero();
     sortTableBynegative();
 event.preventDefault();
 
@@ -1002,30 +1011,6 @@ function formatValue(number, originalValue) {
     return number.toString(); // Andernfalls gibt die Zahl als Text zurück
 }
 
-
-
-// Funktion zum Sortieren der Zeilen mit 0 in Spalte 2
-function sortTableByzero() {
-    var table = document.getElementById("dataTable");
-    var rows = Array.from(table.rows);
-
-    rows.sort(function(a, b) {
-        // Vergleiche die Werte in Spalte 2 (Menge)
-        var valueA = a.cells[1].textContent.trim().toLowerCase();
-        var valueB = b.cells[1].textContent.trim().toLowerCase();
-
-        // Verschiebe Zeilen mit Wert 0 nach unten
-        if (valueA === "0" && valueB !== "0") return 1;
-        if (valueA !== "0" && valueB === "0") return -1;
-
-
-    });
-
-    // Entferne bestehende Zeilen aus der Tabelle
-    for (var i = 0; i < rows.length; i++) {
-        table.appendChild(rows[i]);
-    }
-}
 
 
 
@@ -1374,11 +1359,11 @@ function toggleTableEditing() {
         table.contentEditable = true;
         table.classList.add("editable"); // Füge eine CSS-Klasse für bearbeitbare Tabellen hinzu
         stopExportTimer();
+        showUnsavedWarning();
         console.log("Die Tabelle kann bearbeitet werden.");
     } else {
         table.contentEditable = false;
         table.classList.remove("editable"); // Entferne die CSS-Klasse, um die Tabelle nicht bearbeitbar zu machen
-        showUnsavedWarning();
         console.log("Die Bearbeitung der Tabelle ist abgeschlossen.");
         exportTextFileToCloud();
         startExportTimer();
