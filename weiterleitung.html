@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weiterleitung...</title>
     <script type="text/javascript">
-        window.location.href = "file:///" + window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1);
+        // Hole den "file"-Parameter aus der URL
+        var filePath = new URLSearchParams(window.location.search).get('file');
+        
+        // Weiterleitung zur lokalen Datei
+        if (filePath) {
+            window.location.href = "file:///" + filePath;
+        } else {
+            document.body.innerHTML = "<p>Fehler: Keine Datei zum Weiterleiten gefunden.</p>";
+        }
     </script>
 </head>
 <body>
