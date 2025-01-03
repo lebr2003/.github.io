@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weiterleitung...</title>
+    <script type="text/javascript">
+        // Hole den "file"-Parameter aus der URL
+        var filePath = new URLSearchParams(window.location.search).get('file');
+        
+        // Weiterleitung zur lokalen Datei
+        if (filePath) {
+            window.location.href = "filePath;
+        } else {
+            document.body.innerHTML = "<p>Fehler: Keine Datei zum Weiterleiten gefunden.</p>";
+        }
+    </script>
+</head>
+<body>
+    <p>Weiterleitung zu deiner Datei...</p>
+</body>
+</html>
