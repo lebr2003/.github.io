@@ -495,9 +495,26 @@ function importTextFileFromCloud() {
                     })
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error('Fehler beim Herunterladen der Datei.');
+                            // Dropbox spezifische Fehlerbehandlung
+                            if (response.status === 409) { // Konfliktfehler (z.B. Datei nicht gefunden)
+                                return response.json().then(errorData => {
+                                    if (errorData?.error?.['.tag'] === 'path') {
+                                        const errorTag = errorData.error.path['.tag'];
+                                        if (errorTag === 'not_found') {
+                                            localStorage.setItem('access_token', ''); // Token leeren
+                                            throw new Error("Ihr Account ist nicht autorisiert. Wenden Sie sich an den Admin: apotheke@leanderbrunar.net"); // Fehler werfen, um den gesamten Funktionsablauf zu stoppen
+                                        } else {
+                                            throw new Error('Ein Pfadfehler ist aufgetreten: ' + errorTag);
+                                        }
+                                    } else {
+                                        throw new Error('Ein API-Fehler ist aufgetreten.');
+                                    }
+                                });
+                            } else {
+                                throw new Error('HTTP-Fehler: ' + response.status);
+                            }
                         }
-                        return response.blob();  // Antwort als Blob zurückgeben
+                        return response.blob(); // Antwort als Blob zurückgeben
                     })
                     .then(blob => {
                         // Erstelle ein File-Objekt aus dem Blob
@@ -532,8 +549,8 @@ function importTextFileFromCloud() {
                         console.log("Daten erfolgreich von der Cloud importiert");
                     })
                     .catch(error => {
-                        console.error('Fehler beim Importieren der Datei: ', error);
-                        alert('Fehler beim Importieren der Datei. Bitte versuchen Sie es erneut.');
+                        console.error('Fehler beim Herunterladen der Datei: ', error.message);
+                        alert('Fehler: ' + error.message);
                     });
                 }
             })
